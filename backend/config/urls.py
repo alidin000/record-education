@@ -7,7 +7,7 @@ from rest_framework.routers import DefaultRouter
 from contacts.views import BranchViewSet, ContactSubmissionViewSet
 from courses.views import CourseCategoryViewSet, CourseViewSet, ScheduleViewSet
 from news.views import NewsArticleViewSet
-from reviews.views import AchievementViewSet, ReviewViewSet
+from reviews.views import AchievementViewSet, ReviewViewSet, StudentFeedbackViewSet
 from teachers.views import TeacherViewSet
 
 router = DefaultRouter()
@@ -20,6 +20,7 @@ router.register(r"achievements", AchievementViewSet, basename="achievement")
 router.register(r"news", NewsArticleViewSet, basename="news")
 router.register(r"branches", BranchViewSet, basename="branch")
 router.register(r"contact", ContactSubmissionViewSet, basename="contact")
+router.register(r"feedback", StudentFeedbackViewSet, basename="feedback")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaStar, FaPlay } from 'react-icons/fa';
-import { getReviews } from '../utils/api';
+import { FaStar, FaPlay, FaCheck } from 'react-icons/fa';
+import { getReviews, getFeedbacks, submitFeedback } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
 
 export default function Reviews() {
   const { t } = useTranslation();
   const { getField } = useLocalized();
   const [reviews, setReviews] = useState(demoReviews);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    getReviews()
-      .then((res) => {
-        const data = res.data.results || res.data;
-        if (data.length) setReviews(data);
+    Promise.all([getReviews(), getFeedbacks()])
+      .then(([revRes, fbRes]) => {
+        const revData = revRes.data.results || revRes.data;
+        const fbData = fbRes.data.results || fbRes.data;
+        if (revData.length) setReviews(revData);
+        if (fbData.length) setFeedbacks(fbData);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -25,7 +29,21 @@ export default function Reviews() {
       <div className="max-w-7xl mx-auto px-4">
         <h1 className="section-title">{t('reviews.title')}</h1>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Toggle feedback form button */}
+        <div className="text-center mb-10">
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="btn-secondary"
+          >
+            {showForm ? t('reviews.hide_form') : t('reviews.leave_feedback')}
+          </button>
+        </div>
+
+        {/* Student Feedback Form */}
+        {showForm && <FeedbackForm onSuccess={() => setShowForm(false)} />}
+
+        {/* Admin-managed reviews (high scorers) */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {reviews.map((review) => (
             <div key={review.id} className="card p-6">
               <div className="flex items-center gap-3 mb-4">
@@ -63,7 +81,180 @@ export default function Reviews() {
             </div>
           ))}
         </div>
+
+        {/* Student-submitted feedbacks (approved) */}
+        {feedbacks.length > 0 && (
+          <>
+            <h2 className="text-2xl font-bold text-primary text-center mb-8">
+              {t('reviews.student_feedbacks')}
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {feedbacks.map((fb) => (
+                <div key={fb.id} className="card p-5 border-l-4 border-secondary">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold text-gray-800">{fb.student_name}</h4>
+                    <div className="flex text-secondary">
+                      {[...Array(fb.rating)].map((_, i) => (
+                        <FaStar key={i} className="text-sm" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-600 text-sm">{fb.text}</p>
+                  {fb.course_taken && (
+                    <p className="text-xs text-gray-400 mt-2">{fb.course_taken}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
+    </div>
+  );
+}
+
+function FeedbackForm({ onSuccess }) {
+  const { t } = useTranslation();
+  const [form, setForm] = useState({
+    student_name: '', phone: '', email: '', text: '', rating: 5, course_taken: ''
+  });
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [hoverRating, setHoverRating] = useState(0);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await submitFeedback(form);
+    } catch {
+      // demo mode fallback
+    }
+    setSubmitted(true);
+    setLoading(false);
+    setTimeout(() => {
+      setSubmitted(false);
+      onSuccess?.();
+    }, 3000);
+  };
+
+  if (submitted) {
+    return (
+      <div className="max-w-lg mx-auto mb-12 card p-8 text-center">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <FaCheck className="text-2xl text-green-600" />
+        </div>
+        <p className="text-green-700 font-medium">{t('reviews.feedback_success')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-lg mx-auto mb-12 card p-8">
+      <h3 className="text-xl font-bold text-primary mb-6">{t('reviews.form_title')}</h3>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t('contacts.form_name')} *
+          </label>
+          <input
+            type="text"
+            required
+            value={form.student_name}
+            onChange={(e) => setForm({ ...form, student_name: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('contacts.form_phone')}
+            </label>
+            <input
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="+996 ..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t('reviews.which_course')}
+          </label>
+          <input
+            type="text"
+            value={form.course_taken}
+            onChange={(e) => setForm({ ...form, course_taken: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+          />
+        </div>
+
+        {/* Star Rating */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t('reviews.your_rating')}
+          </label>
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                onClick={() => setForm({ ...form, rating: star })}
+                onMouseEnter={() => setHoverRating(star)}
+                onMouseLeave={() => setHoverRating(0)}
+                className="text-2xl transition-colors"
+              >
+                <FaStar
+                  className={
+                    star <= (hoverRating || form.rating)
+                      ? 'text-secondary'
+                      : 'text-gray-300'
+                  }
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t('reviews.your_review')} *
+          </label>
+          <textarea
+            rows="4"
+            required
+            value={form.text}
+            onChange={(e) => setForm({ ...form, text: e.target.value })}
+            placeholder={t('reviews.review_placeholder')}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary w-full disabled:opacity-50"
+        >
+          {loading ? '...' : t('reviews.submit_feedback')}
+        </button>
+
+        <p className="text-xs text-gray-500 text-center">
+          {t('reviews.moderation_note')}
+        </p>
+      </form>
     </div>
   );
 }

@@ -61,7 +61,18 @@
   "reviews": {
     "title": "Отзывы",
     "score": "баллов",
-    "watch_video": "Смотреть видео"
+    "watch_video": "Смотреть видео",
+    "leave_feedback": "Оставить отзыв",
+    "hide_form": "Скрыть форму",
+    "form_title": "Написать отзыв",
+    "your_rating": "Ваша оценка",
+    "your_review": "Ваш отзыв",
+    "which_course": "На каком курсе вы учились?",
+    "review_placeholder": "Напишите ваше мнение о центре Рекорд...",
+    "submit_feedback": "Отправить отзыв",
+    "feedback_success": "Ваш отзыв принят! Он будет опубликован после модерации.",
+    "moderation_note": "Отзыв будет опубликован на сайте после модерации.",
+    "student_feedbacks": "Отзывы учеников"
   },
   "news": {
     "title": "Новости",

@@ -61,7 +61,18 @@
   "reviews": {
     "title": "Reviews",
     "score": "points",
-    "watch_video": "Watch Video"
+    "watch_video": "Watch Video",
+    "leave_feedback": "Leave a Review",
+    "hide_form": "Hide Form",
+    "form_title": "Write a Review",
+    "your_rating": "Your Rating",
+    "your_review": "Your Review",
+    "which_course": "Which course did you take?",
+    "review_placeholder": "Share your experience at Record center...",
+    "submit_feedback": "Submit Review",
+    "feedback_success": "Your review has been submitted! It will be published after moderation.",
+    "moderation_note": "Your review will appear on the site after moderation.",
+    "student_feedbacks": "Student Reviews"
   },
   "news": {
     "title": "News",

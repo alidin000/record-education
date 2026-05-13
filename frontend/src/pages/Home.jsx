@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { FaTrophy, FaUserGraduate, FaCertificate, FaBuilding } from 'react-icons/fa';
+import { FaTrophy, FaUserGraduate, FaCertificate, FaBuilding, FaWhatsapp } from 'react-icons/fa';
+import { getWhatsAppLink } from '../components/WhatsAppButton';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -72,8 +73,8 @@ export default function Home() {
             <Link to="/courses" className="btn-primary">
               {t('hero.cta_secondary')}
             </Link>
-            <a href="https://wa.me/996555000000" className="btn-whatsapp justify-center">
-              WhatsApp
+            <a href={getWhatsAppLink('Саламатсызбы! Курстар жөнүндө маалымат алгым келет.')} target="_blank" rel="noopener noreferrer" className="btn-whatsapp justify-center">
+              <FaWhatsapp /> WhatsApp
             </a>
           </div>
         </div>

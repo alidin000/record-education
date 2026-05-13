@@ -34,4 +34,8 @@ export const getBranches = () => api.get('/branches/');
 
 export const submitContact = (data) => api.post('/contact/', data);
 
+export const getFeedbacks = () => api.get('/feedback/');
+
+export const submitFeedback = (data) => api.post('/feedback/', data);
+
 export default api;

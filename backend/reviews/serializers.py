@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Achievement, Review
+from .models import Achievement, Review, StudentFeedback
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -21,3 +21,17 @@ class AchievementSerializer(serializers.ModelSerializer):
             "description_ky", "description_ru", "description_en",
             "image", "value", "order",
         ]
+
+
+class StudentFeedbackCreateSerializer(serializers.ModelSerializer):
+    """For students submitting feedback (public endpoint)."""
+    class Meta:
+        model = StudentFeedback
+        fields = ["student_name", "phone", "email", "text", "rating", "course_taken"]
+
+
+class StudentFeedbackListSerializer(serializers.ModelSerializer):
+    """For displaying approved feedback publicly."""
+    class Meta:
+        model = StudentFeedback
+        fields = ["id", "student_name", "text", "rating", "course_taken", "created_at"]

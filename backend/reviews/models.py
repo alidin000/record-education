@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Review(models.Model):
+    """Admin-managed reviews (verified, published)."""
     student_name = models.CharField(max_length=200)
     text_ky = models.TextField(blank=True)
     text_ru = models.TextField(blank=True)
@@ -18,6 +19,35 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.student_name} - {self.score} балл"
+
+
+class StudentFeedback(models.Model):
+    """Public feedback submitted by students (requires admin approval)."""
+    STATUS_CHOICES = [
+        ("pending", "Күтүүдө / Pending"),
+        ("approved", "Жарыяланды / Approved"),
+        ("rejected", "Четке кагылды / Rejected"),
+    ]
+
+    student_name = models.CharField(max_length=200)
+    phone = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(blank=True)
+    text = models.TextField()
+    rating = models.PositiveIntegerField(
+        default=5, help_text="1-5 stars"
+    )
+    course_taken = models.CharField(max_length=200, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
+    admin_notes = models.TextField(blank=True, help_text="Internal notes, not shown publicly")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Student Feedback"
+        verbose_name_plural = "Student Feedbacks"
+
+    def __str__(self):
+        return f"{self.student_name} ({self.get_status_display()})"
 
 
 class Achievement(models.Model):
