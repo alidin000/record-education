@@ -86,22 +86,31 @@ export default function NewsAdmin() {
 }
 
 function NewsForm({ article, onSuccess }) {
-  const [form, setForm] = useState({
-    title_ky: '', title_ru: '', title_en: '',
-    content_ky: '', content_ru: '', content_en: '',
-    category: 'general', is_published: true,
-    ...article,
-  });
+  const writableFields = ['title_ky', 'title_ru', 'title_en', 'content_ky', 'content_ru', 'content_en', 'category', 'is_published'];
+
+  const getInitial = () => {
+    const base = { title_ky: '', title_ru: '', title_en: '', content_ky: '', content_ru: '', content_en: '', category: 'general', is_published: true };
+    if (!article) return base;
+    const filled = { ...base };
+    writableFields.forEach((key) => {
+      if (article[key] !== undefined) filled[key] = article[key];
+    });
+    return filled;
+  };
+
+  const [form, setForm] = useState(getInitial);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const payload = {};
+    writableFields.forEach((key) => { payload[key] = form[key]; });
     try {
       if (article) {
-        await adminApi.patch(`/news/${article.id}/`, form);
+        await adminApi.patch(`/news/${article.id}/`, payload);
       } else {
-        await adminApi.post('/news/', form);
+        await adminApi.post('/news/', payload);
       }
       onSuccess();
     } catch (err) {

@@ -74,23 +74,31 @@ export default function TeachersAdmin() {
 }
 
 function TeacherForm({ teacher, onSuccess }) {
-  const [form, setForm] = useState({
-    full_name_ky: '', full_name_ru: '', full_name_en: '',
-    subject_ky: '', subject_ru: '', subject_en: '',
-    bio_ky: '', bio_ru: '', bio_en: '',
-    experience_years: 0, is_active: true, order: 0,
-    ...teacher,
-  });
+  const writableFields = ['full_name_ky', 'full_name_ru', 'full_name_en', 'subject_ky', 'subject_ru', 'subject_en', 'bio_ky', 'bio_ru', 'bio_en', 'experience_years', 'is_active', 'order'];
+
+  const getInitial = () => {
+    const base = { full_name_ky: '', full_name_ru: '', full_name_en: '', subject_ky: '', subject_ru: '', subject_en: '', bio_ky: '', bio_ru: '', bio_en: '', experience_years: 0, is_active: true, order: 0 };
+    if (!teacher) return base;
+    const filled = { ...base };
+    writableFields.forEach((key) => {
+      if (teacher[key] !== undefined) filled[key] = teacher[key];
+    });
+    return filled;
+  };
+
+  const [form, setForm] = useState(getInitial);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const payload = {};
+    writableFields.forEach((key) => { payload[key] = form[key]; });
     try {
       if (teacher) {
-        await adminApi.patch(`/teachers/${teacher.id}/`, form);
+        await adminApi.patch(`/teachers/${teacher.id}/`, payload);
       } else {
-        await adminApi.post('/teachers/', form);
+        await adminApi.post('/teachers/', payload);
       }
       onSuccess();
     } catch (err) {

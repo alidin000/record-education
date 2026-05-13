@@ -67,22 +67,31 @@ export default function AchievementsAdmin() {
 }
 
 function AchievementForm({ item, onSuccess }) {
-  const [form, setForm] = useState({
-    title_ky: '', title_ru: '', title_en: '',
-    description_ky: '', description_ru: '', description_en: '',
-    value: '', order: 0,
-    ...item,
-  });
+  const writableFields = ['title_ky', 'title_ru', 'title_en', 'description_ky', 'description_ru', 'description_en', 'value', 'order'];
+
+  const getInitial = () => {
+    const base = { title_ky: '', title_ru: '', title_en: '', description_ky: '', description_ru: '', description_en: '', value: '', order: 0 };
+    if (!item) return base;
+    const filled = { ...base };
+    writableFields.forEach((key) => {
+      if (item[key] !== undefined) filled[key] = item[key];
+    });
+    return filled;
+  };
+
+  const [form, setForm] = useState(getInitial);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const payload = {};
+    writableFields.forEach((key) => { payload[key] = form[key]; });
     try {
       if (item) {
-        await adminApi.patch(`/achievements/${item.id}/`, form);
+        await adminApi.patch(`/achievements/${item.id}/`, payload);
       } else {
-        await adminApi.post('/achievements/', form);
+        await adminApi.post('/achievements/', payload);
       }
       onSuccess();
     } catch (err) {

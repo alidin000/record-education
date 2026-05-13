@@ -71,19 +71,26 @@ export default function BranchesAdmin() {
 }
 
 function BranchForm({ item, onSuccess }) {
-  const [form, setForm] = useState({
-    name_ky: '', name_ru: '', name_en: '',
-    address_ky: '', address_ru: '', address_en: '',
-    phone: '', whatsapp: '', instagram_url: '',
-    latitude: '', longitude: '', is_main: false,
-    ...item,
-  });
+  const writableFields = ['name_ky', 'name_ru', 'name_en', 'address_ky', 'address_ru', 'address_en', 'phone', 'whatsapp', 'instagram_url', 'latitude', 'longitude', 'is_main'];
+
+  const getInitial = () => {
+    const base = { name_ky: '', name_ru: '', name_en: '', address_ky: '', address_ru: '', address_en: '', phone: '', whatsapp: '', instagram_url: '', latitude: '', longitude: '', is_main: false };
+    if (!item) return base;
+    const filled = { ...base };
+    writableFields.forEach((key) => {
+      if (item[key] !== undefined && item[key] !== null) filled[key] = item[key];
+    });
+    return filled;
+  };
+
+  const [form, setForm] = useState(getInitial);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const payload = { ...form };
+    const payload = {};
+    writableFields.forEach((key) => { payload[key] = form[key]; });
     if (!payload.latitude) payload.latitude = null;
     if (!payload.longitude) payload.longitude = null;
     try {

@@ -14,23 +14,19 @@ export default function Courses() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([getCourses(), getCategories()])
-      .then(([coursesRes, categoriesRes]) => {
-        setCourses(coursesRes.data.results || coursesRes.data);
-        setCategories(categoriesRes.data.results || categoriesRes.data);
-      })
-      .catch(() => {
-        setCourses(demoCourses);
-      })
-      .finally(() => setLoading(false));
+    getCategories()
+      .then((res) => setCategories(res.data.results || res.data))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (activeCategory) {
-      getCourses(activeCategory)
-        .then((res) => setCourses(res.data.results || res.data))
-        .catch(() => {});
-    }
+    setLoading(true);
+    getCourses(activeCategory || undefined)
+      .then((res) => setCourses(res.data.results || res.data))
+      .catch(() => {
+        if (!activeCategory) setCourses(demoCourses);
+      })
+      .finally(() => setLoading(false));
   }, [activeCategory]);
 
   if (loading) {

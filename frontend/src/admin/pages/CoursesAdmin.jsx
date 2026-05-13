@@ -189,23 +189,34 @@ function CategoryManager({ categories, onUpdate }) {
 }
 
 function CourseForm({ course, categories, onSuccess }) {
-  const [form, setForm] = useState({
-    title_ky: '', title_ru: '', title_en: '',
-    description_ky: '', description_ru: '', description_en: '',
-    category: '', duration: '', price: '', start_date: '', is_active: true,
-    ...course,
-    category: course?.category?.id || course?.category || '',
-  });
+  const writableFields = ['title_ky', 'title_ru', 'title_en', 'description_ky', 'description_ru', 'description_en', 'category', 'duration', 'price', 'start_date', 'is_active'];
+
+  const getInitial = () => {
+    const base = { title_ky: '', title_ru: '', title_en: '', description_ky: '', description_ru: '', description_en: '', category: '', duration: '', price: '', start_date: '', is_active: true };
+    if (!course) return base;
+    const filled = { ...base };
+    writableFields.forEach((key) => {
+      if (course[key] !== undefined) filled[key] = course[key];
+    });
+    filled.category = course?.category?.id || course?.category || '';
+    filled.start_date = course.start_date || '';
+    return filled;
+  };
+
+  const [form, setForm] = useState(getInitial);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const payload = {};
+    writableFields.forEach((key) => { payload[key] = form[key]; });
+    if (!payload.start_date) delete payload.start_date;
     try {
       if (course) {
-        await adminApi.patch(`/courses/${course.id}/`, form);
+        await adminApi.patch(`/courses/${course.id}/`, payload);
       } else {
-        await adminApi.post('/courses/', form);
+        await adminApi.post('/courses/', payload);
       }
       onSuccess();
     } catch (err) {

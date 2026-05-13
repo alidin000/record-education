@@ -90,20 +90,31 @@ export default function ScheduleAdmin() {
 }
 
 function ScheduleForm({ item, courses, onSuccess }) {
-  const [form, setForm] = useState({
-    course: '', day: 'mon', start_time: '09:00', end_time: '11:00', room: '',
-    ...item,
-  });
+  const writableFields = ['course', 'day', 'start_time', 'end_time', 'room'];
+
+  const getInitial = () => {
+    const base = { course: '', day: 'mon', start_time: '09:00', end_time: '11:00', room: '' };
+    if (!item) return base;
+    const filled = { ...base };
+    writableFields.forEach((key) => {
+      if (item[key] !== undefined) filled[key] = item[key];
+    });
+    return filled;
+  };
+
+  const [form, setForm] = useState(getInitial);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const payload = {};
+    writableFields.forEach((key) => { payload[key] = form[key]; });
     try {
       if (item) {
-        await adminApi.patch(`/schedule/${item.id}/`, form);
+        await adminApi.patch(`/schedule/${item.id}/`, payload);
       } else {
-        await adminApi.post('/schedule/', form);
+        await adminApi.post('/schedule/', payload);
       }
       onSuccess();
     } catch (err) {
