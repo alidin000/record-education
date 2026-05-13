@@ -53,7 +53,7 @@ class StudentFeedback(models.Model):
 class Achievement(models.Model):
     title_ky = models.CharField(max_length=200)
     title_ru = models.CharField(max_length=200)
-    title_en = models.CharField(max_length=200)
+    title_en = models.CharField(max_length=200, blank=True)
     description_ky = models.TextField(blank=True)
     description_ru = models.TextField(blank=True)
     description_en = models.TextField(blank=True)

@@ -11,10 +11,10 @@ class NewsArticle(models.Model):
 
     title_ky = models.CharField(max_length=300)
     title_ru = models.CharField(max_length=300)
-    title_en = models.CharField(max_length=300)
+    title_en = models.CharField(max_length=300, blank=True)
     content_ky = models.TextField()
     content_ru = models.TextField()
-    content_en = models.TextField()
+    content_en = models.TextField(blank=True)
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default="general")
     image = models.ImageField(upload_to="news/", blank=True)
     is_published = models.BooleanField(default=True)

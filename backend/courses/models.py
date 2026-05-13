@@ -4,7 +4,7 @@ from django.db import models
 class CourseCategory(models.Model):
     name_ky = models.CharField(max_length=100)
     name_ru = models.CharField(max_length=100)
-    name_en = models.CharField(max_length=100)
+    name_en = models.CharField(max_length=100, blank=True)
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -20,7 +20,7 @@ class Course(models.Model):
     )
     title_ky = models.CharField(max_length=200)
     title_ru = models.CharField(max_length=200)
-    title_en = models.CharField(max_length=200)
+    title_en = models.CharField(max_length=200, blank=True)
     description_ky = models.TextField(blank=True)
     description_ru = models.TextField(blank=True)
     description_en = models.TextField(blank=True)

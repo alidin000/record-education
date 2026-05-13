@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '../AuthContext';
 import FormModal from '../components/FormModal';
-import { FaPlus, FaEdit, FaTrash, FaToggleOn, FaToggleOff } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaToggleOn, FaToggleOff, FaTags } from 'react-icons/fa';
 
 export default function CoursesAdmin() {
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [catModalOpen, setCatModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
   const fetchData = () => {
@@ -46,9 +47,14 @@ export default function CoursesAdmin() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Курстар</h1>
-        <button onClick={openNew} className="btn-primary flex items-center gap-2 text-sm">
-          <FaPlus /> Жаңы курс
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => setCatModalOpen(true)} className="flex items-center gap-2 text-sm px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+            <FaTags /> Категориялар ({categories.length})
+          </button>
+          <button onClick={openNew} className="btn-primary flex items-center gap-2 text-sm">
+            <FaPlus /> Жаңы курс
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -107,6 +113,77 @@ export default function CoursesAdmin() {
       <FormModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Курсту өзгөртүү' : 'Жаңы курс'}>
         <CourseForm course={editing} categories={categories} onSuccess={() => { setModalOpen(false); fetchData(); }} />
       </FormModal>
+
+      <FormModal isOpen={catModalOpen} onClose={() => setCatModalOpen(false)} title="Категориялар">
+        <CategoryManager categories={categories} onUpdate={fetchData} />
+      </FormModal>
+    </div>
+  );
+}
+
+function CategoryManager({ categories, onUpdate }) {
+  const [form, setForm] = useState({ name_ky: '', name_ru: '', name_en: '', slug: '' });
+  const [loading, setLoading] = useState(false);
+
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const slug = form.slug || form.name_ru.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    try {
+      await adminApi.post('/categories/', { ...form, slug });
+      setForm({ name_ky: '', name_ru: '', name_en: '', slug: '' });
+      onUpdate();
+    } catch (err) {
+      alert('Ката: ' + JSON.stringify(err.response?.data));
+    }
+    setLoading(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Бул категорияны жок кылуу? (ичиндеги курстар да жок болот!)')) return;
+    await adminApi.delete(`/categories/${id}/`);
+    onUpdate();
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Existing categories */}
+      {categories.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-gray-700">Бар категориялар:</h4>
+          {categories.map((cat) => (
+            <div key={cat.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div>
+                <span className="font-medium text-sm">{cat.name_ky}</span>
+                <span className="text-xs text-gray-500 ml-2">({cat.name_ru})</span>
+              </div>
+              <button onClick={() => handleDelete(cat.id)} className="text-red-400 hover:text-red-600 text-xs">
+                <FaTrash />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Add new category */}
+      <form onSubmit={handleAdd} className="border-t pt-4 space-y-3">
+        <h4 className="text-sm font-medium text-gray-700">Жаңы категория кошуу:</h4>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Аталышы (Кыргызча) *</label>
+            <input type="text" required value={form.name_ky} onChange={(e) => setForm({ ...form, name_ky: e.target.value })}
+              placeholder="мис: ЖРТ Математика" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Название (Русский) *</label>
+            <input type="text" required value={form.name_ru} onChange={(e) => setForm({ ...form, name_ru: e.target.value })}
+              placeholder="напр: ОРТ Математика" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+          </div>
+        </div>
+        <button type="submit" disabled={loading} className="btn-primary w-full text-sm disabled:opacity-50">
+          {loading ? '...' : 'Категория кошуу'}
+        </button>
+      </form>
     </div>
   );
 }

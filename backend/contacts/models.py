@@ -4,10 +4,10 @@ from django.db import models
 class Branch(models.Model):
     name_ky = models.CharField(max_length=200)
     name_ru = models.CharField(max_length=200)
-    name_en = models.CharField(max_length=200)
+    name_en = models.CharField(max_length=200, blank=True)
     address_ky = models.TextField()
     address_ru = models.TextField()
-    address_en = models.TextField()
+    address_en = models.TextField(blank=True)
     phone = models.CharField(max_length=20)
     whatsapp = models.CharField(max_length=20)
     instagram_url = models.URLField(blank=True)

@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CourseCategoryAdminSerializer(serializers.ModelSerializer):
     courses_count = serializers.SerializerMethodField()
+    slug = serializers.SlugField(required=False)
 
     class Meta:
         model = CourseCategory
@@ -23,6 +24,13 @@ class CourseCategoryAdminSerializer(serializers.ModelSerializer):
 
     def get_courses_count(self, obj):
         return obj.courses.count()
+
+    def create(self, validated_data):
+        if not validated_data.get("slug"):
+            from django.utils.text import slugify
+            base = validated_data.get("name_ru") or validated_data.get("name_ky", "")
+            validated_data["slug"] = slugify(base, allow_unicode=True)
+        return super().create(validated_data)
 
 
 class ScheduleAdminSerializer(serializers.ModelSerializer):
