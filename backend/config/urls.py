@@ -25,6 +25,7 @@ router.register(r"feedback", StudentFeedbackViewSet, basename="feedback")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
+    path("api/admin/", include("admin_api.urls")),
 ]
 
 if settings.DEBUG:

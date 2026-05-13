@@ -12,27 +12,61 @@ import Reviews from './pages/Reviews';
 import News from './pages/News';
 import Contacts from './pages/Contacts';
 
+import { AuthProvider } from './admin/AuthContext';
+import AdminLayout from './admin/components/AdminLayout';
+import Login from './admin/pages/Login';
+import Dashboard from './admin/pages/Dashboard';
+import CoursesAdmin from './admin/pages/CoursesAdmin';
+import TeachersAdmin from './admin/pages/TeachersAdmin';
+import ScheduleAdmin from './admin/pages/ScheduleAdmin';
+import FeedbacksAdmin from './admin/pages/FeedbacksAdmin';
+import AchievementsAdmin from './admin/pages/AchievementsAdmin';
+import NewsAdmin from './admin/pages/NewsAdmin';
+import ContactsAdmin from './admin/pages/ContactsAdmin';
+import BranchesAdmin from './admin/pages/BranchesAdmin';
+
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/schedule" element={<Schedule />} />
-            <Route path="/teachers" element={<Teachers />} />
-            <Route path="/achievements" element={<Achievements />} />
-            <Route path="/reviews" element={<Reviews />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/contacts" element={<Contacts />} />
-          </Routes>
-        </main>
-        <Footer />
-        <WhatsAppButton />
-      </div>
+      <AuthProvider>
+        <Routes>
+          {/* Public Site */}
+          <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+          <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />
+          <Route path="/courses" element={<PublicLayout><Courses /></PublicLayout>} />
+          <Route path="/schedule" element={<PublicLayout><Schedule /></PublicLayout>} />
+          <Route path="/teachers" element={<PublicLayout><Teachers /></PublicLayout>} />
+          <Route path="/achievements" element={<PublicLayout><Achievements /></PublicLayout>} />
+          <Route path="/reviews" element={<PublicLayout><Reviews /></PublicLayout>} />
+          <Route path="/news" element={<PublicLayout><News /></PublicLayout>} />
+          <Route path="/contacts" element={<PublicLayout><Contacts /></PublicLayout>} />
+
+          {/* Admin Panel */}
+          <Route path="/panel/login" element={<Login />} />
+          <Route path="/panel" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="courses" element={<CoursesAdmin />} />
+            <Route path="teachers" element={<TeachersAdmin />} />
+            <Route path="schedule" element={<ScheduleAdmin />} />
+            <Route path="feedbacks" element={<FeedbacksAdmin />} />
+            <Route path="achievements" element={<AchievementsAdmin />} />
+            <Route path="news" element={<NewsAdmin />} />
+            <Route path="contacts" element={<ContactsAdmin />} />
+            <Route path="branches" element={<BranchesAdmin />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </Router>
+  );
+}
+
+function PublicLayout({ children }) {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1">{children}</main>
+      <Footer />
+      <WhatsAppButton />
+    </div>
   );
 }
