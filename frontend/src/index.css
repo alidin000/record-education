@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1e3a5f;
+  --color-primary-light: #2d5a8e;
+  --color-secondary: #f59e0b;
+  --color-secondary-light: #fbbf24;
+  --color-accent: #10b981;
+  --color-dark: #1a1a2e;
+  --color-light: #f8fafc;
+}
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply text-gray-800 bg-white;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-lg font-semibold 
+           hover:bg-primary-light transition-all duration-300 
+           shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-white px-6 py-3 rounded-lg font-semibold 
+           hover:bg-secondary-light transition-all duration-300 
+           shadow-md hover:shadow-lg;
+  }
+
+  .btn-whatsapp {
+    @apply bg-green-500 text-white px-6 py-3 rounded-lg font-semibold 
+           hover:bg-green-600 transition-all duration-300 
+           shadow-md hover:shadow-lg flex items-center gap-2;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-primary mb-8 text-center;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-lg overflow-hidden 
+           hover:shadow-xl transition-all duration-300 
+           transform hover:-translate-y-1;
+  }
+}
