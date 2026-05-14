@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: ./backend
+    container_name: record-backend
+    env_file: ./backend/.env
+    environment:
+      - DEBUG=False
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
+      - CORS_ALLOWED_ORIGINS=http://localhost,http://127.0.0.1,http://localhost:3000
+    volumes:
+      - media_data:/app/media
+      - db_data:/app
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: record-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  media_data:
+  db_data:
