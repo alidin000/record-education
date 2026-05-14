@@ -56,6 +56,9 @@
 | Backend | Django 5.1, Django REST Framework, SimpleJWT |
 | Database | SQLite (локалдык), PostgreSQL (продакшн) |
 | Тил колдоо | react-i18next (frontend), Django i18n (backend) |
+| Контейнер | Docker, Docker Compose, Nginx |
+| CI/CD | GitHub Actions → Docker Hub |
+| Тесттер | Django TestCase (backend), Vitest (frontend) |
 
 ---
 
@@ -71,6 +74,8 @@ record-education/
 │   ├── news/                # Жаңылыктар
 │   ├── contacts/            # Байланыш формасы + филиалдар
 │   ├── admin_api/           # Админ панелдин API'си (JWT менен)
+│   ├── Dockerfile           # Backend Docker image
+│   ├── entrypoint.sh        # Миграция + сервер баштоо
 │   ├── requirements.txt
 │   └── manage.py
 ├── frontend/                # React frontend
@@ -80,16 +85,59 @@ record-education/
 │   │   ├── admin/           # Админ панель (login, dashboard, CRUD pages)
 │   │   ├── locales/         # Которуулар (ky, ru, en)
 │   │   ├── hooks/           # useLocalized
-│   │   └── utils/           # API client (axios)
+│   │   ├── utils/           # API client (axios)
+│   │   └── test/            # Vitest тесттери
+│   ├── Dockerfile           # Frontend Docker image (multi-stage)
+│   ├── nginx.conf           # Nginx конфигурациясы
 │   ├── package.json
 │   └── vite.config.js
+├── .github/workflows/ci.yml # GitHub Actions CI/CD
+├── docker-compose.yml       # Бир команда менен иштетүү
 ├── .gitignore
 └── README.md
 ```
 
 ---
 
-## Локалдык иштетүү
+## Docker менен иштетүү (эң оңой жол)
+
+### Талаптар
+
+- **Docker** жана **Docker Compose** орнотулган болушу керек
+
+### Бир команда менен баштоо
+
+```bash
+git clone https://github.com/alidin000/record-education.git
+cd record-education
+
+# .env файлын түзүү (backend үчүн)
+cp backend/.env.example backend/.env
+
+# Бардыгын иштетүү
+docker compose up --build
+```
+
+Даяр! Сайт ачылат:
+- **http://localhost** — Коомдук сайт
+- **http://localhost/panel/login** — Админ панель
+- **http://localhost:8000/admin/** — Django admin
+
+### Админ аккаунт түзүү (Docker ичинде)
+
+```bash
+docker compose exec backend python manage.py createsuperuser
+```
+
+### Токтотуу
+
+```bash
+docker compose down
+```
+
+---
+
+## Локалдык иштетүү (Docker'сиз)
 
 ### Талаптар
 
@@ -233,9 +281,77 @@ Frontend иштеп жатат: **http://localhost:5173**
 
 ---
 
+## Тесттер
+
+### Backend тесттери (42 тест)
+
+```bash
+cd backend
+source venv/bin/activate
+python manage.py test --verbosity=2
+```
+
+Тесттер бардык апптарды камтыйт:
+- `courses/tests.py` — Курстар, категориялар, расписание (модель + API + админ)
+- `teachers/tests.py` — Окутуучулар (модель + көрүнүштүлүк + админ уруксаттар)
+- `reviews/tests.py` — Отзывдар, feedback жөнөтүү/жарыялоо/четке кагуу
+- `news/tests.py` — Жаңылыктар жарыялоо, фильтрлөө
+- `contacts/tests.py` — Кайрылуулар, филиалдар, иштетүү
+
+### Frontend тесттери (Vitest)
+
+```bash
+cd frontend
+npm test -- --run
+```
+
+---
+
+## CI/CD Pipeline (GitHub Actions)
+
+Push кылганда автоматтуу иштейт (`.github/workflows/ci.yml`):
+
+```
+┌─────────────────┐     ┌─────────────────┐
+│  test-backend   │     │  test-frontend   │
+│  (Python 3.12)  │     │  (Node.js 20)    │
+│  manage.py test │     │  vitest + build  │
+└────────┬────────┘     └────────┬─────────┘
+         │                       │
+         └───────────┬───────────┘
+                     ▼
+         ┌───────────────────────┐
+         │   build-and-push      │
+         │  (main branch гана)   │
+         │  Docker Hub'ка push   │
+         └───────────────────────┘
+```
+
+### Docker Hub Images
+
+| Image | Тег |
+|-------|-----|
+| `alidin000/record-backend` | `latest`, `<commit-sha>` |
+| `alidin000/record-frontend` | `latest`, `<commit-sha>` |
+
+### Docker Hub орнотуу
+
+1. [hub.docker.com/settings/security](https://hub.docker.com/settings/security) → **New Access Token** түзүү
+2. GitHub репозиторийде: **Settings → Secrets → Actions** → `DOCKER_HUB_TOKEN` кошуу
+
+### Docker Hub'дан иштетүү (серверде)
+
+```bash
+docker pull alidin000/record-backend:latest
+docker pull alidin000/record-frontend:latest
+docker compose up
+```
+
+---
+
 ## Продакшнго чыгаруу
 
-### Backend
+### Docker менен (сунушталат)
 
 ```bash
 # .env файлында:
@@ -252,16 +368,19 @@ EMAIL_HOST_USER=your-email@gmail.com
 EMAIL_HOST_PASSWORD=your-app-password
 ADMIN_EMAIL=director@record-edu.kg
 
-# Static файлдар
-python manage.py collectstatic
-
-# Gunicorn менен иштетүү
-gunicorn config.wsgi:application --bind 0.0.0.0:8000
+# Бир команда менен иштетүү
+docker compose up -d
 ```
 
-### Frontend
+### Кол менен (Docker'сиз)
 
 ```bash
+# Backend
+cd backend
+python manage.py collectstatic
+gunicorn config.wsgi:application --bind 0.0.0.0:8000
+
+# Frontend
 cd frontend
 npm run build
 # dist/ папкасын nginx же Vercel/Netlify менен serve кылуу
@@ -273,7 +392,7 @@ npm run build
 |---------|-------|------------|
 | **Railway.app** | $5/ай | Backend + DB бирге, оңой |
 | **Vercel** (frontend) + **Railway** (backend) | $5/ай | Тез, масштабдуу |
-| **DigitalOcean Droplet** | $6/ай | Толук контроль |
+| **DigitalOcean Droplet** | $6/ай | Толук контроль, Docker менен |
 | **Render.com** | Бекер (чектелген) | Башталгычтар үчүн |
 
 ---
