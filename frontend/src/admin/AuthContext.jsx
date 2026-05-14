@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext(null);
@@ -42,27 +42,20 @@ adminApi.interceptors.response.use(
 export { adminApi };
 
 export function AuthProvider({ children }) {
+  const hasToken = Boolean(localStorage.getItem('access_token'));
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const initialized = useRef(false);
+  const [loading, setLoading] = useState(hasToken);
 
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
-
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      adminApi.get('/me/')
-        .then((res) => setUser(res.data))
-        .catch(() => {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
-  }, []);
+    if (!hasToken) return;
+    adminApi.get('/me/')
+      .then((res) => setUser(res.data))
+      .catch(() => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+      })
+      .finally(() => setLoading(false));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = async (username, password) => {
     const res = await axios.post('/api/admin/token/', { username, password });

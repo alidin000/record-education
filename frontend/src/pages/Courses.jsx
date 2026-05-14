@@ -21,7 +21,6 @@ export default function Courses() {
 
   useEffect(() => {
     let cancelled = false;
-    setCourses([]);
     getCourses(activeCategory || undefined)
       .then((res) => {
         if (!cancelled) setCourses(res.data.results || res.data);
