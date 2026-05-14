@@ -7,9 +7,9 @@ on:
     branches: [main]
 
 env:
-  DOCKER_HUB_USERNAME: alidin000
-  BACKEND_IMAGE: alidin000/record-backend
-  FRONTEND_IMAGE: alidin000/record-frontend
+  DOCKER_HUB_USERNAME: alidin
+  BACKEND_IMAGE: alidin/record-backend
+  FRONTEND_IMAGE: alidin/record-frontend
 
 jobs:
   test-backend:
