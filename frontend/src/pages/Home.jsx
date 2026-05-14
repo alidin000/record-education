@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { FaTrophy, FaUserGraduate, FaCertificate, FaBuilding, FaWhatsapp } from 'react-icons/fa';
-import { getWhatsAppLink } from '../components/WhatsAppButton';
+import { getWhatsAppLink } from '../utils/whatsapp';
 
 export default function Home() {
   const { t } = useTranslation();

@@ -9,7 +9,6 @@ export default function Achievements() {
   const { getField } = useLocalized();
   const [achievements, setAchievements] = useState(demoAchievements);
   const [topStudents, setTopStudents] = useState(demoTopStudents);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([getAchievements(), getReviews(true)])
@@ -19,8 +18,7 @@ export default function Achievements() {
         if (achData.length) setAchievements(achData);
         if (revData.length) setTopStudents(revData);
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, []);
 
   return (

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext(null);
@@ -38,13 +38,18 @@ adminApi.interceptors.response.use(
   }
 );
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { adminApi };
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const initialized = useRef(false);
 
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+
     const token = localStorage.getItem('access_token');
     if (token) {
       adminApi.get('/me/')
@@ -81,6 +86,7 @@ export function AuthProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
 }

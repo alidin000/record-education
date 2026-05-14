@@ -20,13 +20,19 @@ export default function Courses() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
+    setCourses([]);
     getCourses(activeCategory || undefined)
-      .then((res) => setCourses(res.data.results || res.data))
-      .catch(() => {
-        if (!activeCategory) setCourses(demoCourses);
+      .then((res) => {
+        if (!cancelled) setCourses(res.data.results || res.data);
       })
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled && !activeCategory) setCourses(demoCourses);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [activeCategory]);
 
   if (loading) {

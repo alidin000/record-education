@@ -9,7 +9,6 @@ export default function Reviews() {
   const { getField } = useLocalized();
   const [reviews, setReviews] = useState(demoReviews);
   const [feedbacks, setFeedbacks] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
@@ -20,8 +19,7 @@ export default function Reviews() {
         if (revData.length) setReviews(revData);
         if (fbData.length) setFeedbacks(fbData);
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, []);
 
   return (
