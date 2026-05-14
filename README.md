@@ -349,15 +349,73 @@ docker compose up
 
 ---
 
-## Продакшнго чыгаруу
+## Render.com'до деплой кылуу (бекер)
 
-### Docker менен (сунушталат)
+### Автоматтык деплой (Blueprint)
+
+1. [render.com/dashboard](https://dashboard.render.com) → **New** → **Blueprint**
+2. GitHub репозиторийиңизди тандаңыз (`alidin000/record-education`)
+3. Render автоматтуу `render.yaml` файлын окуп, 3 сервис түзөт:
+   - **record-backend** — Django API (Python web service)
+   - **record-frontend** — React статик сайт
+   - **record-db** — PostgreSQL маалымат базасы (бекер)
+
+4. Deploy бүткөндө, админ аккаунт түзүү:
+   - Render Dashboard → **record-backend** → **Shell** табын ачуу
+   - `python manage.py createsuperuser` жазуу
+
+### Кол менен деплой (эгер Blueprint иштебесе)
+
+**1. PostgreSQL түзүү:**
+- Render Dashboard → New → PostgreSQL → Free plan
+- `Internal Database URL` көчүрүү
+
+**2. Backend (Web Service):**
+- New → Web Service → GitHub репо тандоо
+- Root Directory: `backend`
+- Build Command: `./build.sh`
+- Start Command: `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
+- Environment Variables:
+  | Key | Value |
+  |-----|-------|
+  | `DATABASE_URL` | (PostgreSQL'ден көчүргөн URL) |
+  | `SECRET_KEY` | (каалаган узун текст) |
+  | `DEBUG` | `False` |
+  | `ALLOWED_HOSTS` | `.onrender.com` |
+  | `CORS_ALLOWED_ORIGINS` | `https://record-frontend.onrender.com` |
+  | `PYTHON_VERSION` | `3.12.0` |
+
+**3. Frontend (Static Site):**
+- New → Static Site → GitHub репо тандоо
+- Root Directory: `frontend`
+- Build Command: `npm ci && npm run build`
+- Publish Directory: `dist`
+- Redirect/Rewrite rules:
+  | Source | Destination | Type |
+  |--------|-------------|------|
+  | `/api/*` | `https://record-backend.onrender.com/api/*` | Rewrite |
+  | `/media/*` | `https://record-backend.onrender.com/media/*` | Rewrite |
+  | `/*` | `/index.html` | Rewrite |
+
+### Render маалымат
+
+- Бекер план: сервис 15 мүнөт активсиздиктен кийин "уктайт", кийинки суроо 30-50 сек көбүрөөк алат
+- PostgreSQL бекер пландын 90 күн мөөнөтү бар, андан кийин $7/ай
+- Media файлдар (сүрөттөр) үчүн эгер көп сүрөт жүктөсө, Cloudinary же AWS S3 колдонуу сунушталат
+
+---
+
+## Продакшнго чыгаруу (башка варианттар)
+
+### Docker менен
 
 ```bash
 # .env файлында:
 DEBUG=False
 SECRET_KEY=<чыныгы-коопсуз-ачкыч>
+DATABASE_URL=postgres://user:pass@host:5432/dbname
 ALLOWED_HOSTS=record-edu.kg,www.record-edu.kg
+CORS_ALLOWED_ORIGINS=https://record-edu.kg
 
 # Email (Gmail мисал):
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
@@ -368,32 +426,18 @@ EMAIL_HOST_USER=your-email@gmail.com
 EMAIL_HOST_PASSWORD=your-app-password
 ADMIN_EMAIL=director@record-edu.kg
 
-# Бир команда менен иштетүү
+# Иштетүү
 docker compose up -d
 ```
 
-### Кол менен (Docker'сиз)
-
-```bash
-# Backend
-cd backend
-python manage.py collectstatic
-gunicorn config.wsgi:application --bind 0.0.0.0:8000
-
-# Frontend
-cd frontend
-npm run build
-# dist/ папкасын nginx же Vercel/Netlify менен serve кылуу
-```
-
-### Сунушталган хостинг варианттары
+### Хостинг варианттары
 
 | Вариант | Баасы | Жакшы жагы |
 |---------|-------|------------|
+| **Render.com** | Бекер | Blueprint менен автоматтык деплой |
 | **Railway.app** | $5/ай | Backend + DB бирге, оңой |
-| **Vercel** (frontend) + **Railway** (backend) | $5/ай | Тез, масштабдуу |
 | **DigitalOcean Droplet** | $6/ай | Толук контроль, Docker менен |
-| **Render.com** | Бекер (чектелген) | Башталгычтар үчүн |
+| **Vercel** (frontend) + **Railway** (backend) | $5/ай | Тез, масштабдуу |
 
 ---
 

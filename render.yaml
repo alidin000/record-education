@@ -1,0 +1,54 @@
+databases:
+  - name: record-db
+    plan: free
+    databaseName: record_education
+    user: record_user
+
+services:
+  - type: web
+    name: record-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: record-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: CORS_ALLOWED_ORIGINS
+        fromService:
+          type: web
+          name: record-frontend
+          property: url
+      - key: PYTHON_VERSION
+        value: "3.12.0"
+
+  - type: web
+    name: record-frontend
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://record-backend.onrender.com/api/*
+      - type: rewrite
+        source: /media/*
+        destination: https://record-backend.onrender.com/media/*
+      - type: rewrite
+        source: /*
+        destination: /index.html
