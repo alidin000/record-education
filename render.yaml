@@ -27,6 +27,12 @@ services:
         value: "https://record-frontend.onrender.com"
       - key: PYTHON_VERSION
         value: "3.12.0"
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: "admin"
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: "admin@record-edu.kg"
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
 
   - type: web
     name: record-frontend
