@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.mail import send_mail
 from rest_framework import mixins, status, viewsets
@@ -6,6 +8,8 @@ from rest_framework.response import Response
 
 from .models import Branch, ContactSubmission
 from .serializers import BranchSerializer, ContactSubmissionSerializer
+
+logger = logging.getLogger("record")
 
 
 class BranchViewSet(viewsets.ReadOnlyModelViewSet):
@@ -29,8 +33,7 @@ class ContactSubmissionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def _send_notification_email(self, submission):
-        """Send email notification to admin about new contact submission."""
-        subject = f"Жаңы кайрылуу: {submission.full_name}"
+        subject = "Жаңы кайрылуу алынды"
         message = (
             f"Жаңы кайрылуу алынды!\n\n"
             f"Аты-жөнү: {submission.full_name}\n"
@@ -38,8 +41,6 @@ class ContactSubmissionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet)
             f"Курс: {submission.course_interest or 'Көрсөтүлгөн эмес'}\n"
             f"Билдирүү: {submission.message or 'Жок'}\n\n"
             f"Убакыт: {submission.created_at}\n"
-            f"---\n"
-            f"Админ панелден көрүү: /admin/contacts/contactsubmission/{submission.id}/change/"
         )
         try:
             send_mail(
@@ -47,7 +48,7 @@ class ContactSubmissionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet)
                 message=message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[settings.ADMIN_EMAIL],
-                fail_silently=True,
+                fail_silently=False,
             )
         except Exception:
-            pass
+            logger.exception("Failed to send contact notification email")

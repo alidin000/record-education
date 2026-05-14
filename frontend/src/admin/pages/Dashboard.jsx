@@ -9,11 +9,12 @@ import {
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     adminApi.get('/dashboard/')
       .then((res) => setStats(res.data))
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
 
@@ -21,6 +22,18 @@ export default function Dashboard() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+        <FaExclamationCircle className="text-red-500 text-3xl mx-auto mb-3" />
+        <p className="text-red-700 font-medium">Маалыматтарды жүктөөдө ката кетти</p>
+        <button onClick={() => window.location.reload()} className="mt-3 text-sm text-primary hover:underline">
+          Кайра аракет кылуу
+        </button>
       </div>
     );
   }

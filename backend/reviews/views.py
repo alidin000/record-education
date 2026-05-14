@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.mail import send_mail
 from rest_framework import mixins, status, viewsets
@@ -11,6 +13,8 @@ from .serializers import (
     StudentFeedbackCreateSerializer,
     StudentFeedbackListSerializer,
 )
+
+logger = logging.getLogger("record")
 
 
 class ReviewViewSet(viewsets.ReadOnlyModelViewSet):
@@ -34,11 +38,6 @@ class AchievementViewSet(viewsets.ReadOnlyModelViewSet):
 class StudentFeedbackViewSet(
     mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
-    """
-    Public endpoint:
-    - POST: Students submit feedback (goes to pending status)
-    - GET: Only shows approved feedbacks
-    """
     permission_classes = [AllowAny]
 
     def get_queryset(self):
@@ -62,15 +61,13 @@ class StudentFeedbackViewSet(
         )
 
     def _notify_admin(self, feedback):
-        """Notify admin about new student feedback."""
-        subject = f"Жаңы отзыв: {feedback.student_name}"
+        subject = "Жаңы отзыв алынды"
         message = (
             f"Жаңы отзыв алынды!\n\n"
             f"Окуучу: {feedback.student_name}\n"
             f"Рейтинг: {'⭐' * feedback.rating}\n"
             f"Курс: {feedback.course_taken or 'Көрсөтүлгөн эмес'}\n"
-            f"Текст: {feedback.text}\n\n"
-            f"Жарыялоо/четке кагуу: /admin/reviews/studentfeedback/{feedback.id}/change/"
+            f"Текст: {feedback.text}\n"
         )
         try:
             send_mail(
@@ -78,7 +75,7 @@ class StudentFeedbackViewSet(
                 message=message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[settings.ADMIN_EMAIL],
-                fail_silently=True,
+                fail_silently=False,
             )
         except Exception:
-            pass
+            logger.exception("Failed to send feedback notification email")

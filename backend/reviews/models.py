@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -34,7 +35,9 @@ class StudentFeedback(models.Model):
     email = models.EmailField(blank=True)
     text = models.TextField()
     rating = models.PositiveIntegerField(
-        default=5, help_text="1-5 stars"
+        default=5,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        help_text="1-5 stars",
     )
     course_taken = models.CharField(max_length=200, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")

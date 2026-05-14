@@ -24,6 +24,6 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ScheduleViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Schedule.objects.select_related("course").all()
+    queryset = Schedule.objects.select_related("course").filter(course__is_active=True)
     serializer_class = ScheduleSerializer
     permission_classes = [AllowAny]

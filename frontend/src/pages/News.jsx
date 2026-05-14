@@ -7,17 +7,18 @@ import { useLocalized } from '../hooks/useLocalized';
 export default function News() {
   const { t } = useTranslation();
   const { getField } = useLocalized();
-  const [articles, setArticles] = useState(demoNews);
+  const [articles, setArticles] = useState([]);
   const [activeCategory, setActiveCategory] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     getNews()
       .then((res) => {
         const data = res.data.results || res.data;
-        if (data.length) setArticles(data);
+        setArticles(data);
       })
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
 
@@ -26,10 +27,22 @@ export default function News() {
     ? articles.filter((a) => a.category === activeCategory)
     : articles;
 
+  if (loading) {
+    return (
+      <div className="py-16 flex justify-center">
+        <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="py-16">
       <div className="max-w-7xl mx-auto px-4">
         <h1 className="section-title">{t('news.title')}</h1>
+
+        {error && (
+          <p className="text-center text-red-500 py-4">{t('common.error_loading')}</p>
+        )}
 
         {/* Category Filter */}
         <div className="flex flex-wrap gap-2 justify-center mb-10">
@@ -89,16 +102,10 @@ export default function News() {
           ))}
         </div>
 
-        {filtered.length === 0 && (
-          <p className="text-center text-gray-500 py-12">No news available.</p>
+        {!error && filtered.length === 0 && (
+          <p className="text-center text-gray-500 py-12">{t('news.no_news')}</p>
         )}
       </div>
     </div>
   );
 }
-
-const demoNews = [
-  { id: 1, category: 'promo', title_ky: '10% арзандатуу — чектелген убакыт!', title_ru: 'Скидка 10% — ограниченное время!', title_en: '10% Discount — Limited Time!', content_ky: 'Бардык курстарга 10% арзандатуу. Акция 2026-жылдын июнь айына чейин.', content_ru: 'Скидка 10% на все курсы. Акция до июня 2026 года.', content_en: '10% discount on all courses. Promotion valid until June 2026.', published_at: '2026-05-01' },
-  { id: 2, category: 'course', title_ky: 'Жаңы интенсив курс ачылды', title_ru: 'Открыт новый интенсивный курс', title_en: 'New Intensive Course Opened', content_ky: '2 айлык интенсив курс — ЖРТга тез даярдануу үчүн.', content_ru: '2-месячный интенсивный курс — для быстрой подготовки к ОРТ.', content_en: '2-month intensive course for fast ORT preparation.', published_at: '2026-04-15' },
-  { id: 3, category: 'exam', title_ky: 'ЖРТ 2026 — жаңы өзгөрүүлөр', title_ru: 'ОРТ 2026 — новые изменения', title_en: 'ORT 2026 — New Changes', content_ky: '2026-жылдагы ЖРТда жаңы типтеги суроолор киргизилет.', content_ru: 'В ОРТ 2026 года вводятся новые типы вопросов.', content_en: 'New question types introduced in ORT 2026.', published_at: '2026-03-20' },
-];

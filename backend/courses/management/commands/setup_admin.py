@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "Create superuser from environment variables"
+    help = "Create superuser from environment variables (does NOT reset existing)"
 
     def handle(self, *args, **options):
         User = get_user_model()
@@ -18,12 +18,7 @@ class Command(BaseCommand):
             return
 
         if User.objects.filter(username=username).exists():
-            user = User.objects.get(username=username)
-            user.set_password(password)
-            user.is_staff = True
-            user.is_superuser = True
-            user.save()
-            self.stdout.write(self.style.SUCCESS(f"Password reset for '{username}'"))
+            self.stdout.write(self.style.SUCCESS(f"Superuser '{username}' already exists, skipping"))
         else:
             User.objects.create_superuser(username=username, email=email, password=password)
             self.stdout.write(self.style.SUCCESS(f"Superuser '{username}' created"))

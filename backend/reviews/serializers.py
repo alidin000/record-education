@@ -25,6 +25,8 @@ class AchievementSerializer(serializers.ModelSerializer):
 
 class StudentFeedbackCreateSerializer(serializers.ModelSerializer):
     """For students submitting feedback (public endpoint)."""
+    rating = serializers.IntegerField(min_value=1, max_value=5)
+
     class Meta:
         model = StudentFeedback
         fields = ["student_name", "phone", "email", "text", "rating", "course_taken"]
