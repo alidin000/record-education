@@ -10,6 +10,9 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# True when `manage.py test` is running (avoids shared anon throttle breaking the suite).
+_RUNNING_TESTS = len(sys.argv) > 1 and sys.argv[1] == "test"
+
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
 SECRET_KEY = os.getenv("SECRET_KEY", "")
@@ -133,15 +136,17 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    "DEFAULT_THROTTLE_CLASSES": [
+}
+
+if not _RUNNING_TESTS:
+    REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
-    ],
-    "DEFAULT_THROTTLE_RATES": {
+    ]
+    REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
         "anon": "30/minute",
         "user": "120/minute",
-    },
-}
+    }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
