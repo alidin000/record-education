@@ -103,8 +103,12 @@
     "form_submit": "Submit",
     "form_success": "Your application has been received! We will contact you soon.",
     "map_openstreetmap": "OpenStreetMap",
+    "map_google_location": "Google (location)",
+    "map_2gis_location": "2GIS (location)",
+    "map_resolving": "Resolving map link…",
+    "map_resolve_failed": "Could not resolve that link. Try the iframe embed URL, or set latitude and longitude on the branch.",
     "map_placeholder_title": "Map will appear here",
-    "map_placeholder_help": "In the admin panel (Branches), paste the iframe src from Google Maps “Embed a map” or from the 2GIS embed widget. Alternatively set latitude and longitude to show OpenStreetMap."
+    "map_placeholder_help": "Paste a Google Maps share link (maps.app.goo.gl), a 2GIS link, or the iframe src from Google “Embed a map” / 2GIS embed. You can also set latitude and longitude — we show OpenStreetMap for share links after resolving the location on the server."
   },
   "footer": {
     "rights": "All rights reserved",

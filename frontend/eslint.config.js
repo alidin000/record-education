@@ -18,4 +18,11 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    files: ['**/BranchMapTabs.jsx'],
+    rules: {
+      // Fetch + tab reset need setState in effects; pattern is bounded and cancel-safe.
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
 ])

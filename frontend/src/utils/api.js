@@ -32,6 +32,9 @@ export const getNews = (category) => {
 
 export const getBranches = () => api.get('/branches/');
 
+/** Resolve Google / 2GIS share links to lat/lon (server-side). */
+export const resolveMapLink = (url) => api.get('/resolve-map-link/', { params: { url } });
+
 /** Public home-page ticker / promo overrides (singleton). */
 export const getSitePromo = () => api.get('/site-promo/');
 

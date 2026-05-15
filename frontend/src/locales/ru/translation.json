@@ -103,8 +103,12 @@
     "form_submit": "Отправить",
     "form_success": "Ваша заявка принята! Мы скоро свяжемся с вами.",
     "map_openstreetmap": "OpenStreetMap",
+    "map_google_location": "Google (место)",
+    "map_2gis_location": "2GIS (место)",
+    "map_resolving": "Обрабатываем ссылку…",
+    "map_resolve_failed": "Не удалось разобрать ссылку. Вставьте src iframe встраивания или укажите широту и долготу.",
     "map_placeholder_title": "Здесь появится карта",
-    "map_placeholder_help": "В админке (Филиалы) вставьте src iframe из Google «Встроить карту» или виджета 2GIS. Либо укажите широту и долготу — покажем OpenStreetMap."
+    "map_placeholder_help": "Вставьте короткую ссылку Google (maps.app.goo.gl), ссылку 2GIS или src iframe. Сервер откроет ссылку и возьмёт координаты; карта показывается через OpenStreetMap."
   },
   "footer": {
     "rights": "Все права защищены",

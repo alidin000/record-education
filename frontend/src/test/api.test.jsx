@@ -32,5 +32,6 @@ describe('API utility functions', () => {
     expect(api.getFeedbacks).toBeDefined()
     expect(api.submitFeedback).toBeDefined()
     expect(api.getSitePromo).toBeDefined()
+    expect(api.resolveMapLink).toBeDefined()
   })
 })

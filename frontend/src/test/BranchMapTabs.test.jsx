@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeMapEmbedSrc, openStreetMapEmbedSrc } from '../utils/mapEmbeds';
+import { sanitizeMapEmbedSrc, openStreetMapEmbedSrc, looksLikeResolvableMapShareUrl } from '../utils/mapEmbeds';
 
 describe('BranchMapTabs helpers', () => {
   it('sanitizeMapEmbedSrc accepts Google Maps embed https URL', () => {
@@ -29,5 +29,15 @@ describe('BranchMapTabs helpers', () => {
 
   it('openStreetMapEmbedSrc returns null for invalid coords', () => {
     expect(openStreetMapEmbedSrc('x', 'y')).toBeNull();
+  });
+
+  it('looksLikeResolvableMapShareUrl detects Google short links', () => {
+    expect(looksLikeResolvableMapShareUrl('https://maps.app.goo.gl/abc')).toBe(true);
+    expect(looksLikeResolvableMapShareUrl('https://www.google.com/maps/embed?pb=1')).toBe(false);
+  });
+
+  it('looksLikeResolvableMapShareUrl detects 2GIS hosts', () => {
+    expect(looksLikeResolvableMapShareUrl('https://2gis.kg/bishkek')).toBe(true);
+    expect(looksLikeResolvableMapShareUrl('https://go.2gis.com/xyz')).toBe(true);
   });
 });

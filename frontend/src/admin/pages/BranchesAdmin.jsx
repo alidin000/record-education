@@ -188,14 +188,14 @@ function BranchForm({ item, onSuccess }) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Google Maps embed (iframe src)</label>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Google Maps (шилтеме же embed src)</label>
         <textarea rows={2} value={form.google_maps_embed_url} onChange={(e) => setForm({ ...form, google_maps_embed_url: e.target.value })}
-          placeholder="https://www.google.com/maps/embed?..." className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-xs" />
+          placeholder="https://maps.app.goo.gl/... же https://www.google.com/maps/embed?..." className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-xs" />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">2GIS embed (iframe src)</label>
+        <label className="block text-xs font-medium text-gray-600 mb-1">2GIS (шилтеме же embed src)</label>
         <textarea rows={2} value={form.two_gis_embed_url} onChange={(e) => setForm({ ...form, two_gis_embed_url: e.target.value })}
-          placeholder="https://..." className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-xs" />
+          placeholder="https://go.2gis.com/... же iframe src" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-xs" />
       </div>
 
       <div className="flex items-center gap-2">

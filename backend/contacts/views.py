@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from .map_resolve import MapResolveError, resolve_map_share_url
 from .models import Branch, ContactSubmission, SitePromo
 from .serializers import BranchSerializer, ContactSubmissionSerializer, SitePromoPublicSerializer
 
@@ -31,6 +32,24 @@ def site_promo_public(request):
             }
         )
     return Response(SitePromoPublicSerializer(row).data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def resolve_map_link(request):
+    """
+    Resolve a Google / 2GIS share URL to latitude & longitude (JSON).
+
+    Used when admins paste short links instead of iframe embed src.
+    """
+    url = (request.query_params.get("url") or "").strip()
+    if not url:
+        return Response({"detail": "Query parameter url is required"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        payload = resolve_map_share_url(url)
+        return Response(payload)
+    except MapResolveError as exc:
+        return Response({"detail": str(exc)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class BranchViewSet(viewsets.ReadOnlyModelViewSet):

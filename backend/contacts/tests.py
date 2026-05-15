@@ -58,6 +58,19 @@ class BranchMapFieldsAPITest(TestCase):
         self.assertTrue(any(r.get("google_maps_embed_url") for r in rows))
 
 
+class ResolveMapLinkAPITest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_resolve_missing_url(self):
+        r = self.client.get("/api/resolve-map-link/")
+        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_resolve_rejects_disallowed_host(self):
+        r = self.client.get("/api/resolve-map-link/", {"url": "https://example.com/map"})
+        self.assertEqual(r.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
 class ContactAPITest(TestCase):
     def setUp(self):
         self.client = APIClient()

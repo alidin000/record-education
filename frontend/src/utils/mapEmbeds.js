@@ -21,3 +21,29 @@ export function openStreetMapEmbedSrc(lat, lon) {
   const bbox = `${lo - d},${la - d},${lo + d},${la + d}`;
   return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${la},${lo}`;
 }
+
+/**
+ * True if the URL is likely a share link we can send to /api/resolve-map-link/
+ * (not already an iframe embed src).
+ */
+export function looksLikeResolvableMapShareUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  const u = url.trim();
+  if (!u.startsWith('https://')) return false;
+  const lower = u.toLowerCase();
+  // Already an embeddable iframe src (do not send to resolver).
+  if (/\bmaps\/embed\b/i.test(lower) || /[?&]output=embed\b/i.test(lower)) return false;
+  if (/widgets\.2gis\.|widget\.2gis\.|catalog\.api\.2gis\./i.test(lower)) return false;
+  if (/maps\.gstatic\.com|googleusercontent\.com/i.test(lower)) return false;
+  try {
+    const host = new URL(u).hostname.toLowerCase();
+    if (host === 'maps.app.goo.gl' || host === 'goo.gl') return true;
+    if (host === 'go.2gis.com' || host === 'link.2gis.com') return true;
+    if (host.endsWith('2gis.kg') || host.endsWith('2gis.ru') || host.endsWith('2gis.kz') || host.endsWith('2gis.uz')) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
