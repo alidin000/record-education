@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { FaClock, FaCalendar, FaTag } from 'react-icons/fa';
 import { getCourses, getCategories } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
+import PageHeader from '../components/PageHeader';
 
 export default function Courses() {
   const { t } = useTranslation();
@@ -31,97 +32,141 @@ export default function Courses() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [activeCategory]);
 
   if (loading) {
     return (
-      <div className="py-16 text-center">
-        <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+      <div>
+        <PageHeader title={t('courses.title')} />
+        <div className="flex justify-center py-24">
+          <div className="spinner-brand" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="py-16">
-      <div className="max-w-7xl mx-auto px-4">
-        <h1 className="section-title">{t('courses.title')}</h1>
+    <div>
+      <PageHeader title={t('courses.title')} />
 
-        {/* Filter */}
-        <div className="flex flex-wrap gap-2 justify-center mb-12">
+      <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
+        <div className="mb-12 flex flex-wrap justify-center gap-2">
           <button
+            type="button"
             onClick={() => setActiveCategory('')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              !activeCategory ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`pill-filter ${!activeCategory ? 'pill-filter-active' : ''}`}
           >
             {t('courses.filter_all')}
           </button>
           {categories.map((cat) => (
             <button
               key={cat.id || cat.slug}
+              type="button"
               onClick={() => setActiveCategory(cat.slug)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeCategory === cat.slug ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className={`pill-filter ${activeCategory === cat.slug ? 'pill-filter-active' : ''}`}
             >
               {getField(cat, 'name')}
             </button>
           ))}
         </div>
 
-        {/* Course Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {courses.map((course) => (
-            <div key={course.id} className="card">
-              <div className="h-48 bg-gradient-to-br from-primary/80 to-primary-light flex items-center justify-center">
+            <article key={course.id} className="card flex flex-col">
+              <div className="relative h-52 overflow-hidden bg-gradient-to-br from-primary via-primary-light to-slate-800">
+                <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent_40%,rgba(255,255,255,0.08)_50%,transparent_60%)]" />
                 {course.image ? (
-                  <img src={course.image} alt={getField(course, 'title')} className="w-full h-full object-cover" />
+                  <img src={course.image} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-4xl text-white/50">📚</span>
+                  <div className="flex h-full items-center justify-center font-display text-5xl font-black text-white/25">
+                    R
+                  </div>
                 )}
+                <span className="absolute bottom-3 left-3 rounded-full bg-secondary/95 px-3 py-1 text-xs font-bold text-white shadow-lg">
+                  RECORD
+                </span>
               </div>
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-primary mb-2">
-                  {getField(course, 'title')}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+              <div className="flex flex-1 flex-col p-6">
+                <h3 className="font-display text-lg font-bold text-primary">{getField(course, 'title')}</h3>
+                <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-slate-600">
                   {getField(course, 'description')}
                 </p>
-                <div className="space-y-2 text-sm text-gray-500 mb-4">
+                <div className="mt-4 space-y-2 border-t border-slate-100 pt-4 text-sm text-slate-600">
                   <div className="flex items-center gap-2">
                     <FaClock className="text-secondary" />
-                    <span>{t('courses.duration')}: {course.duration}</span>
+                    <span>
+                      {t('courses.duration')}: {course.duration}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <FaTag className="text-secondary" />
-                    <span>{t('courses.price')}: {course.price} сом</span>
+                    <span>
+                      {t('courses.price')}: {course.price} сом
+                    </span>
                   </div>
-                  {course.start_date && (
+                  {course.start_date ? (
                     <div className="flex items-center gap-2">
                       <FaCalendar className="text-secondary" />
-                      <span>{t('courses.start_date')}: {course.start_date}</span>
+                      <span>
+                        {t('courses.start_date')}: {course.start_date}
+                      </span>
                     </div>
-                  )}
+                  ) : null}
                 </div>
-                <Link to="/contacts" className="btn-primary w-full text-center block text-sm py-2">
+                <Link to="/contacts" className="btn-primary mt-6 w-full justify-center py-3 text-center text-sm">
                   {t('courses.enroll')}
                 </Link>
               </div>
-            </div>
+            </article>
           ))}
         </div>
 
-        {courses.length === 0 && (
-          <p className="text-center text-gray-500 py-12">No courses available yet.</p>
-        )}
+        {courses.length === 0 ? (
+          <p className="py-16 text-center text-slate-500">No courses available yet.</p>
+        ) : null}
       </div>
     </div>
   );
 }
 
 const demoCourses = [
-  { id: 1, title_ky: 'ЖРТ Математика', title_ru: 'ОРТ Математика', title_en: 'ORT Mathematics', description_ky: 'Толук математика курсу', description_ru: 'Полный курс математики', description_en: 'Full mathematics course', duration: '3 ай', price: '5000', start_date: '2026-06-01' },
-  { id: 2, title_ky: 'ЖРТ Кыргыз тили', title_ru: 'ОРТ Кыргызский язык', title_en: 'ORT Kyrgyz Language', description_ky: 'Кыргыз тили курсу', description_ru: 'Курс кыргызского языка', description_en: 'Kyrgyz language course', duration: '3 ай', price: '5000', start_date: '2026-06-01' },
-  { id: 3, title_ky: 'Интенсив 10 күн', title_ru: 'Интенсив 10 дней', title_en: 'Intensive 10 days', description_ky: '10 күндүк интенсив программа', description_ru: '10-дневная интенсивная программа', description_en: '10-day intensive program', duration: '10 күн', price: '3000', start_date: '2026-06-15' },
+  {
+    id: 1,
+    title_ky: 'ЖРТ Математика',
+    title_ru: 'ОРТ Математика',
+    title_en: 'ORT Mathematics',
+    description_ky: 'Толук математика курсу',
+    description_ru: 'Полный курс математики',
+    description_en: 'Full mathematics course',
+    duration: '3 ай',
+    price: '5000',
+    start_date: '2026-06-01',
+  },
+  {
+    id: 2,
+    title_ky: 'ЖРТ Кыргыз тили',
+    title_ru: 'ОРТ Кыргызский язык',
+    title_en: 'ORT Kyrgyz Language',
+    description_ky: 'Кыргыз тили курсу',
+    description_ru: 'Курс кыргызского языка',
+    description_en: 'Kyrgyz language course',
+    duration: '3 ай',
+    price: '5000',
+    start_date: '2026-06-01',
+  },
+  {
+    id: 3,
+    title_ky: 'Интенсив 10 күн',
+    title_ru: 'Интенсив 10 дней',
+    title_en: 'Intensive 10 days',
+    description_ky: '10 күндүк интенсив программа',
+    description_ru: '10-дневная интенсивная программа',
+    description_en: '10-day intensive program',
+    duration: '10 күн',
+    price: '3000',
+    start_date: '2026-06-15',
+  },
 ];

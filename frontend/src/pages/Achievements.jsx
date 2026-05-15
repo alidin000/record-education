@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FaTrophy, FaMedal, FaStar } from 'react-icons/fa';
 import { getAchievements, getReviews } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
+import PageHeader from '../components/PageHeader';
 
 export default function Achievements() {
   const { t } = useTranslation();
@@ -22,42 +23,44 @@ export default function Achievements() {
   }, []);
 
   return (
-    <div className="py-16">
-      <div className="max-w-7xl mx-auto px-4">
-        <h1 className="section-title">{t('achievements.title')}</h1>
+    <div>
+      <PageHeader title={t('achievements.title')} />
 
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
+      <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
+        <div className="mb-16 grid gap-6 md:grid-cols-3">
           {achievements.map((ach, i) => (
-            <div key={ach.id || i} className="card p-8 text-center bg-gradient-to-br from-white to-blue-50">
-              <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                {i === 0 ? <FaTrophy className="text-3xl text-secondary" /> :
-                 i === 1 ? <FaMedal className="text-3xl text-secondary" /> :
-                 <FaStar className="text-3xl text-secondary" />}
+            <div
+              key={ach.id || i}
+              className="card relative overflow-hidden p-8 text-center before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-gradient-to-b before:from-secondary before:to-primary before:content-['']"
+            >
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-secondary/5" />
+              <div className="relative mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+                {i === 0 ? (
+                  <FaTrophy className="text-3xl text-secondary" />
+                ) : i === 1 ? (
+                  <FaMedal className="text-3xl text-secondary" />
+                ) : (
+                  <FaStar className="text-3xl text-secondary" />
+                )}
               </div>
-              <p className="text-4xl font-black text-primary mb-2">{ach.value}</p>
-              <h3 className="text-lg font-semibold text-gray-800">
-                {getField(ach, 'title')}
-              </h3>
-              {getField(ach, 'description') && (
-                <p className="text-sm text-gray-600 mt-2">{getField(ach, 'description')}</p>
-              )}
+              <p className="font-display text-4xl font-black text-primary md:text-5xl">{ach.value}</p>
+              <h3 className="relative mt-2 text-lg font-semibold text-slate-800">{getField(ach, 'title')}</h3>
+              {getField(ach, 'description') ? (
+                <p className="relative mt-2 text-sm text-slate-600">{getField(ach, 'description')}</p>
+              ) : null}
             </div>
           ))}
         </div>
 
-        {/* Top Students */}
-        <h2 className="text-2xl font-bold text-primary text-center mb-8">
-          {t('achievements.high_scorers')}
-        </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <h2 className="section-title">{t('achievements.high_scorers')}</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {topStudents.map((student, i) => (
-            <div key={student.id || i} className="card p-4 text-center">
-              <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-secondary to-amber-400 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">{student.score}</span>
+            <div key={student.id || i} className="card p-5 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-primary shadow-lg shadow-secondary/25">
+                <span className="font-display text-lg font-black text-white">{student.score}</span>
               </div>
               <h4 className="font-semibold text-primary">{student.student_name}</h4>
-              <p className="text-sm text-gray-500">{student.year}</p>
+              <p className="mt-1 text-sm text-slate-500">{student.year}</p>
             </div>
           ))}
         </div>
@@ -67,9 +70,36 @@ export default function Achievements() {
 }
 
 const demoAchievements = [
-  { id: 1, title_ky: 'Жылдык тажрыйба', title_ru: 'Лет опыта', title_en: 'Years of Experience', value: '8+', description_ky: '', description_ru: '', description_en: '' },
-  { id: 2, title_ky: '200+ балл алгандар', title_ru: 'Учеников с 200+ баллами', title_en: 'Students with 200+ Score', value: '150+', description_ky: '', description_ru: '', description_en: '' },
-  { id: 3, title_ky: 'Алтын сертификаттар', title_ru: 'Золотых сертификатов', title_en: 'Gold Certificates', value: '50+', description_ky: '', description_ru: '', description_en: '' },
+  {
+    id: 1,
+    title_ky: 'Жылдык тажрыйба',
+    title_ru: 'Лет опыта',
+    title_en: 'Years of Experience',
+    value: '8+',
+    description_ky: '',
+    description_ru: '',
+    description_en: '',
+  },
+  {
+    id: 2,
+    title_ky: '200+ балл алгандар',
+    title_ru: 'Учеников с 200+ баллами',
+    title_en: 'Students with 200+ Score',
+    value: '150+',
+    description_ky: '',
+    description_ru: '',
+    description_en: '',
+  },
+  {
+    id: 3,
+    title_ky: 'Алтын сертификаттар',
+    title_ru: 'Золотых сертификатов',
+    title_en: 'Gold Certificates',
+    value: '50+',
+    description_ky: '',
+    description_ru: '',
+    description_en: '',
+  },
 ];
 
 const demoTopStudents = [

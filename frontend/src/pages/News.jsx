@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FaCalendar, FaTag } from 'react-icons/fa';
 import { getNews } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
+import PageHeader from '../components/PageHeader';
 
 export default function News() {
   const { t } = useTranslation();
@@ -23,88 +24,82 @@ export default function News() {
   }, []);
 
   const categories = ['promo', 'course', 'exam', 'general'];
-  const filtered = activeCategory
-    ? articles.filter((a) => a.category === activeCategory)
-    : articles;
+  const filtered = activeCategory ? articles.filter((a) => a.category === activeCategory) : articles;
 
   if (loading) {
     return (
-      <div className="py-16 flex justify-center">
-        <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full"></div>
+      <div>
+        <PageHeader title={t('news.title')} />
+        <div className="flex justify-center py-24">
+          <div className="spinner-brand" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="py-16">
-      <div className="max-w-7xl mx-auto px-4">
-        <h1 className="section-title">{t('news.title')}</h1>
+    <div>
+      <PageHeader title={t('news.title')} />
 
-        {error && (
-          <p className="text-center text-red-500 py-4">{t('common.error_loading')}</p>
-        )}
+      <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
+        {error ? <p className="py-6 text-center font-medium text-red-600">{t('common.error_loading')}</p> : null}
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 justify-center mb-10">
+        <div className="mb-12 flex flex-wrap justify-center gap-2">
           <button
+            type="button"
             onClick={() => setActiveCategory('')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              !activeCategory ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`pill-filter ${!activeCategory ? 'pill-filter-active' : ''}`}
           >
             {t('courses.filter_all')}
           </button>
           {categories.map((cat) => (
             <button
               key={cat}
+              type="button"
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeCategory === cat ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className={`pill-filter ${activeCategory === cat ? 'pill-filter-active' : ''}`}
             >
               {t(`news.categories.${cat}`)}
             </button>
           ))}
         </div>
 
-        {/* Articles Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((article) => (
-            <article key={article.id} className="card">
-              <div className="h-48 bg-gradient-to-br from-primary/60 to-primary-light/60 flex items-center justify-center">
+            <article key={article.id} className="card flex flex-col overflow-hidden">
+              <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary via-primary-light to-slate-800">
+                <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent_35%,rgba(255,255,255,0.06)_50%,transparent_65%)]" />
                 {article.image ? (
-                  <img src={article.image} alt="" className="w-full h-full object-cover" />
+                  <img src={article.image} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-4xl">📰</span>
+                  <div className="flex h-full items-center justify-center font-display text-4xl font-black text-white/20">
+                    NEWS
+                  </div>
                 )}
               </div>
-              <div className="p-6">
-                <div className="flex items-center gap-4 mb-3">
-                  <span className="inline-flex items-center gap-1 text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full font-medium">
+              <div className="flex flex-1 flex-col p-6">
+                <div className="mb-3 flex flex-wrap items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-secondary">
                     <FaTag className="text-[10px]" />
                     {t(`news.categories.${article.category}`)}
                   </span>
-                  {article.published_at && (
-                    <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                  {article.published_at ? (
+                    <span className="inline-flex items-center gap-1 text-xs text-slate-400">
                       <FaCalendar className="text-[10px]" />
                       {new Date(article.published_at).toLocaleDateString()}
                     </span>
-                  )}
+                  ) : null}
                 </div>
-                <h3 className="text-lg font-bold text-primary mb-2">
-                  {getField(article, 'title')}
-                </h3>
-                <p className="text-gray-600 text-sm line-clamp-3">
-                  {getField(article, 'content')}
-                </p>
+                <h3 className="font-display text-lg font-bold text-primary">{getField(article, 'title')}</h3>
+                <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-600">{getField(article, 'content')}</p>
               </div>
             </article>
           ))}
         </div>
 
-        {!error && filtered.length === 0 && (
-          <p className="text-center text-gray-500 py-12">{t('news.no_news')}</p>
-        )}
+        {!error && filtered.length === 0 ? (
+          <p className="py-16 text-center text-slate-500">{t('news.no_news')}</p>
+        ) : null}
       </div>
     </div>
   );
