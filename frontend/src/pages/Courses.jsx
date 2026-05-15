@@ -5,6 +5,7 @@ import { FaClock, FaCalendar, FaTag } from 'react-icons/fa';
 import { getCourses, getCategories } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
 import PageHeader from '../components/PageHeader';
+import RecordInnerPageWrap from '../components/RecordInnerPageWrap';
 
 export default function Courses() {
   const { t } = useTranslation();
@@ -41,9 +42,11 @@ export default function Courses() {
     return (
       <div>
         <PageHeader title={t('courses.title')} />
-        <div className="flex justify-center py-24">
-          <div className="spinner-brand" />
-        </div>
+        <RecordInnerPageWrap>
+          <div className="flex justify-center py-24">
+            <div className="spinner-brand" />
+          </div>
+        </RecordInnerPageWrap>
       </div>
     );
   }
@@ -52,7 +55,8 @@ export default function Courses() {
     <div>
       <PageHeader title={t('courses.title')} />
 
-      <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
+      <RecordInnerPageWrap>
+        <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
         <div className="mb-12 flex flex-wrap justify-center gap-2">
           <button
             type="button"
@@ -128,6 +132,7 @@ export default function Courses() {
           <p className="py-16 text-center text-slate-500">No courses available yet.</p>
         ) : null}
       </div>
+      </RecordInnerPageWrap>
     </div>
   );
 }

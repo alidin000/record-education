@@ -1,6 +1,17 @@
 from django.contrib import admin
 
-from .models import Branch, ContactSubmission
+from .models import Branch, ContactSubmission, SitePromo
+
+
+@admin.register(SitePromo)
+class SitePromoAdmin(admin.ModelAdmin):
+    list_display = ["__str__", "ticker_enabled", "updated_at"]
+
+    def has_add_permission(self, request):
+        return not SitePromo.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Branch)
@@ -18,7 +29,13 @@ class BranchAdmin(admin.ModelAdmin):
             "fields": ("phone", "whatsapp", "instagram_url"),
         }),
         ("Map", {
-            "fields": ("latitude", "longitude", "is_main"),
+            "fields": (
+                "latitude",
+                "longitude",
+                "google_maps_embed_url",
+                "two_gis_embed_url",
+                "is_main",
+            ),
         }),
     )
 

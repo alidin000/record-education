@@ -4,6 +4,7 @@ import { FaStar, FaPlay, FaCheck } from 'react-icons/fa';
 import { getReviews, getFeedbacks, submitFeedback } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
 import PageHeader from '../components/PageHeader';
+import RecordInnerPageWrap from '../components/RecordInnerPageWrap';
 
 export default function Reviews() {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ export default function Reviews() {
     <div>
       <PageHeader title={t('reviews.title')} />
 
+      <RecordInnerPageWrap>
       <div className="mx-auto max-w-7xl px-4 pb-20 pt-8 md:pt-10">
         <div className="mb-10 flex justify-center">
           <button type="button" onClick={() => setShowForm(!showForm)} className="btn-secondary">
@@ -95,6 +97,7 @@ export default function Reviews() {
           </>
         ) : null}
       </div>
+      </RecordInnerPageWrap>
     </div>
   );
 }

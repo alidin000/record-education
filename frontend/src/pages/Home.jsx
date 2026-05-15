@@ -1,10 +1,56 @@
+import { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { FaTrophy, FaUserGraduate, FaCertificate, FaBuilding, FaWhatsapp, FaArrowRight, FaStar } from 'react-icons/fa';
+import { FaTrophy, FaUserGraduate, FaCertificate, FaBuilding, FaWhatsapp, FaArrowRight, FaStar, FaBolt } from 'react-icons/fa';
 import { getWhatsAppLink } from '../utils/whatsapp';
+import { getSitePromo } from '../utils/api';
+import MarqueeStrip from '../components/MarqueeStrip';
+import TiltPlane from '../components/TiltPlane';
+import MathInfinityBackdrop from '../components/MathInfinityBackdrop';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { useInView } from '../hooks/useInView';
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [promo, setPromo] = useState(null);
+  const heroRef = useRef(null);
+  const reducedMotion = usePrefersReducedMotion();
+  const [statsRevealRef, statsVisible] = useInView({ threshold: 0.1, rootMargin: '0px 0px -5% 0px' });
+  const [ctaRevealRef, ctaVisible] = useInView({ threshold: 0.08, rootMargin: '0px 0px -4% 0px' });
+
+  useEffect(() => {
+    getSitePromo()
+      .then((res) => setPromo(res.data))
+      .catch(() => setPromo(null));
+  }, []);
+
+  const langBase = i18n.language?.split('-')[0] || 'ky';
+  const lang = ['ky', 'ru', 'en'].includes(langBase) ? langBase : 'ky';
+
+  const discountLabel =
+    (promo && typeof promo[`discount_${lang}`] === 'string' && promo[`discount_${lang}`].trim()) ||
+    t('promo.discount');
+  const limitedLabel =
+    (promo && typeof promo[`limited_${lang}`] === 'string' && promo[`limited_${lang}`].trim()) ||
+    t('promo.limited');
+
+  const showSaleTicker = promo === null || promo.ticker_enabled !== false;
+
+  const onHeroPointer = useCallback(
+    (e) => {
+      if (reducedMotion) return;
+      const el = heroRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const px = ((e.clientX - r.left) / r.width) * 100;
+      const py = ((e.clientY - r.top) / r.height) * 100;
+      el.style.setProperty('--gx-num', String(px));
+      el.style.setProperty('--gy-num', String(py));
+      el.style.setProperty('--gx', `${px}%`);
+      el.style.setProperty('--gy', `${py}%`);
+    },
+    [reducedMotion]
+  );
 
   const stats = [
     { icon: FaTrophy, value: '8+', label: t('stats.experience') },
@@ -15,93 +61,198 @@ export default function Home() {
 
   const statStagger = ['stagger-1', 'stagger-2', 'stagger-3', 'stagger-4'];
 
+  const tickerFragment = useMemo(
+    () => (
+      <>
+        <span className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.35em] text-white/95 md:text-xs">
+          <FaBolt className="text-amber-200" aria-hidden />
+          {discountLabel}
+        </span>
+        <span className="text-white/40">✦</span>
+        <span className="font-black text-amber-100">{limitedLabel}</span>
+        <span className="text-white/40">✦</span>
+        <span className="text-white/80">RECORD</span>
+        <span className="text-white/40">✦</span>
+        <span className="text-white/60">
+          {t('hero.chip_jrt')} · {t('hero.chip_ort')}
+        </span>
+        <FaStar className="text-amber-200/90" aria-hidden />
+      </>
+    ),
+    [discountLabel, limitedLabel, t],
+  );
+
+  const tickerDark = (
+    <>
+      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/90 md:text-[11px]">RECORD</span>
+      <span className="text-secondary">◆</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/45 md:text-[11px]">
+        {t('hero.chip_jrt')} · {t('hero.chip_ort')}
+      </span>
+      <span className="text-white/35">✦</span>
+      <span className="font-black text-secondary-light/90">{t('stats.arena_caption')}</span>
+      <span className="text-white/35">✦</span>
+      <span className="text-[10px] font-black tracking-[0.35em] text-white/50 md:text-[11px]">2016—{new Date().getFullYear()}</span>
+    </>
+  );
+
   return (
     <div>
-      {/* Promo — animated gradient (same reds) */}
-      <div className="promo-shimmer relative overflow-hidden text-center text-white shadow-md shadow-secondary/20">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.07\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-90" />
-        <div className="relative flex items-center justify-center gap-2 px-4 py-3">
-          <FaStar className="hidden shrink-0 text-amber-200/90 motion-safe:animate-pulse sm:block" aria-hidden />
-          <p className="text-sm font-semibold tracking-wide">
-            {t('promo.discount')} — <span className="font-black drop-shadow-sm">{t('promo.limited')}</span>
-          </p>
+      {showSaleTicker ? (
+        <div className="promo-shimmer relative border-b border-white/10 shadow-lg shadow-secondary/25">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M0 40L40 0H0z\' fill=\'%23ffffff\' fill-opacity=\'0.04\'/%3E%3C/svg%3E')]" />
+          <MarqueeStrip className="relative py-3 md:py-3.5">{tickerFragment}</MarqueeStrip>
         </div>
+      ) : null}
+
+      <div className="relative overflow-hidden border-b border-white/5 bg-gradient-to-r from-[#050d18] via-primary to-[#050d18] py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+        <div className="record-ticker-fade-l" aria-hidden />
+        <div className="record-ticker-fade-r" aria-hidden />
+        <MarqueeStrip reverse className="relative z-[2] py-1">
+          {tickerDark}
+        </MarqueeStrip>
       </div>
 
-      {/* Hero */}
-      <section className="hero-mesh relative overflow-hidden text-white">
-        {/* Soft animated orbs */}
+      {/* Hero — maximal mesh + watermark + asymmetric grid */}
+      <section
+        ref={heroRef}
+        onPointerMove={onHeroPointer}
+        className="hero-mesh relative overflow-hidden text-white"
+        style={{
+          '--gx': '50%',
+          '--gy': '42%',
+          '--gx-num': '50',
+          '--gy-num': '46',
+        }}
+      >
+        <div className="hero-watermark" aria-hidden>
+          <span>RECORD</span>
+        </div>
+        <div className="hero-scanlines motion-reduce:hidden" aria-hidden />
+        <div className="hero-film-grain motion-reduce:hidden" aria-hidden />
+        <div className="hero-halftone motion-reduce:hidden" aria-hidden />
+        <MathInfinityBackdrop />
+        <div className="hero-cursor-glow motion-reduce:hidden" aria-hidden />
+
         <div
-          className="pointer-events-none absolute -left-32 top-1/2 h-[28rem] w-[28rem] -translate-y-1/2 rounded-full bg-secondary/20 blur-3xl motion-safe:animate-[record-header-glow_14s_ease-in-out_infinite]"
+          className="pointer-events-none absolute -left-32 top-1/2 h-[28rem] w-[28rem] -translate-y-1/2 rounded-full bg-secondary/25 blur-3xl motion-safe:animate-[record-header-glow_12s_ease-in-out_infinite]"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-sky-400/15 blur-3xl motion-safe:animate-[record-header-glow_18s_ease-in-out_infinite_reverse]"
+          className="pointer-events-none absolute -right-32 top-0 h-[32rem] w-[32rem] rounded-full bg-fuchsia-500/10 blur-3xl motion-safe:animate-[record-header-glow_16s_ease-in-out_infinite_reverse]"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-sky-400/15 blur-3xl"
           aria-hidden
         />
 
-        {/* Fine grid */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.07]"
+          className="hero-grid-shift pointer-events-none absolute inset-0 opacity-[0.08]"
           style={{
             backgroundImage:
-              'linear-gradient(rgba(255,255,255,.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
+              'linear-gradient(rgba(255,255,255,.18) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.14) 1px, transparent 1px)',
+            backgroundSize: '56px 56px',
           }}
           aria-hidden
         />
 
+        <div className="pointer-events-none absolute left-4 top-1/2 hidden -translate-y-1/2 xl:block" aria-hidden>
+          <div className="flex origin-center -rotate-90 flex-col items-center gap-6 text-[10px] font-bold uppercase tracking-[0.5em] text-white/25">
+            <span>RECORD</span>
+            <span className="h-16 w-px bg-gradient-to-b from-transparent via-white/30 to-transparent" />
+            <span>ЖРТ</span>
+            <span>ОРТ</span>
+          </div>
+        </div>
+
         <svg
-          className="pointer-events-none absolute right-[6%] top-20 hidden w-52 opacity-[0.14] motion-safe:animate-pulse lg:block xl:right-[10%] xl:w-72"
-          viewBox="0 0 200 120"
+          className="pointer-events-none absolute right-[4%] top-16 hidden w-64 opacity-[0.18] motion-safe:animate-pulse lg:block"
+          viewBox="0 0 220 140"
           fill="none"
           aria-hidden
         >
-          <path d="M10 40 Q80 10 190 35" stroke="#c8102e" strokeWidth="12" strokeLinecap="round" />
-          <path d="M10 75 Q90 50 190 70" stroke="#ffffff" strokeWidth="12" strokeLinecap="round" opacity="0.85" />
+          <path d="M8 50 Q90 8 210 42" stroke="#c8102e" strokeWidth="10" strokeLinecap="round" />
+          <path d="M8 88 Q100 55 210 82" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" opacity="0.7" />
+          <circle cx="180" cy="28" r="4" fill="#f87171" opacity="0.8" />
         </svg>
 
-        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 md:grid-cols-2 md:py-24 lg:py-28">
-          <div>
-            <p className="fade-rise mb-4 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-slate-100 shadow-lg shadow-black/20 backdrop-blur-md">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-secondary-light shadow-[0_0_12px_#f87171]" />
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 md:grid-cols-12 md:gap-8 md:py-20 lg:py-28">
+          <div className="md:col-span-7 lg:col-span-7">
+            <div className="fade-rise mb-5 flex flex-wrap gap-2">
+              <Link
+                to="/courses"
+                className="hero-chip-hit rounded-full border border-secondary/40 bg-secondary/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-red-100 shadow-lg shadow-secondary/20 backdrop-blur-sm"
+              >
+                {t('hero.chip_jrt')}
+              </Link>
+              <Link
+                to="/courses"
+                className="hero-chip-hit rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-200 backdrop-blur-sm"
+              >
+                {t('hero.chip_ort')}
+              </Link>
+            </div>
+
+            <p className="fade-rise mb-4 inline-flex items-center gap-2 rounded-full border border-white/30 bg-gradient-to-r from-white/15 to-white/5 px-5 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white shadow-xl shadow-black/30 backdrop-blur-md">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-secondary-light shadow-[0_0_14px_#fca5a5]" />
+              </span>
               RECORD
             </p>
-            <h1 className="font-display text-4xl font-extrabold leading-[1.08] tracking-tight drop-shadow-[0_2px_24px_rgba(0,0,0,0.35)] motion-safe:fade-rise motion-safe:stagger-1 md:text-5xl lg:text-6xl">
-              {t('hero.title')}{' '}
-              <span className="bg-gradient-to-r from-white via-slate-100 to-secondary-light bg-clip-text text-transparent">
+
+            <h1 className="font-display text-[2.35rem] font-black leading-[0.95] tracking-[-0.02em] motion-safe:fade-rise motion-safe:stagger-1 sm:text-5xl md:text-6xl lg:text-[4.25rem] xl:text-[4.75rem]">
+              <span className="hero-title-chrome motion-reduce:drop-shadow-[0_4px_32px_rgba(0,0,0,0.45)] block text-white md:drop-shadow-[0_4px_32px_rgba(0,0,0,0.45)]">
+                {t('hero.title')}
+              </span>
+              <span className="mt-1 block bg-gradient-to-r from-white via-red-100 to-secondary-light bg-clip-text text-transparent drop-shadow-[0_2px_24px_rgba(200,16,46,0.35)] md:mt-2">
                 {t('hero.subtitle')}
               </span>
             </h1>
-            <p className="fade-rise stagger-2 mt-6 max-w-xl text-lg leading-relaxed text-slate-200/95 md:text-xl">
+
+            <p className="fade-rise stagger-2 mt-6 max-w-xl border-l-4 border-secondary/80 pl-5 text-base leading-relaxed text-slate-200/95 md:text-lg">
               {t('hero.description')}
             </p>
-            <div className="fade-rise stagger-3 mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link to="/contacts" className="group btn-secondary text-base shadow-xl shadow-black/25">
-                {t('hero.cta')}
-                <FaArrowRight className="text-sm opacity-90 transition-transform group-hover:translate-x-1" />
+
+            <div className="fade-rise stagger-3 mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+              <Link
+                to="/contacts"
+                className="btn-interactive group btn-secondary px-8 py-4 text-base shadow-2xl shadow-black/30"
+              >
+                <span className="inline-flex items-center gap-2">
+                  {t('hero.cta')}
+                  <FaArrowRight className="transition-transform group-hover:translate-x-1.5" />
+                </span>
               </Link>
-              <Link to="/courses" className="btn-ghost-light text-base">
+              <Link to="/courses" className="btn-interactive btn-ghost-light px-8 py-4 text-base">
                 {t('hero.cta_secondary')}
               </Link>
             </div>
           </div>
 
-          <div className="flex justify-center motion-safe:fade-rise motion-safe:stagger-4 md:justify-end">
-            <div className="relative">
-              {/* Orbiting ring */}
+          <div className="relative flex justify-center md:col-span-5 lg:justify-end">
+            <div className="motion-safe:fade-rise motion-safe:stagger-4 record-logo-poster relative w-full max-w-[min(100%,380px)]">
+              <div className="absolute -left-4 top-8 z-20 hidden rotate-[-6deg] rounded-2xl border border-white/20 bg-gradient-to-br from-secondary/90 to-secondary px-4 py-3 text-xs font-black uppercase tracking-wider text-white shadow-2xl sm:block">
+                {t('hero.badge_scores')}
+              </div>
+              <div className="absolute -right-2 bottom-16 z-20 hidden rotate-[8deg] rounded-2xl border border-white/15 bg-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white/90 shadow-xl backdrop-blur-md md:block">
+                {t('hero.badge_location')}
+              </div>
+
               <div
-                className="pointer-events-none absolute -inset-8 rounded-full border border-dashed border-white/15 motion-safe:animate-[record-rotate-slow_48s_linear_infinite]"
+                className="pointer-events-none absolute -inset-10 rounded-full border border-dashed border-white/20 motion-safe:animate-[record-rotate-slow_56s_linear_infinite]"
                 aria-hidden
               />
-              <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-secondary/45 via-transparent to-sky-500/25 blur-2xl motion-safe:animate-pulse" />
-              <div className="float-logo relative">
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-secondary via-secondary-light to-primary p-[3px] shadow-2xl shadow-secondary/30">
-                  <div className="rounded-full bg-[#050d18] p-3 md:p-4">
+              <div className="absolute -inset-6 rounded-full bg-gradient-to-tr from-secondary/50 via-transparent to-sky-400/20 blur-3xl motion-safe:animate-pulse" />
+
+              <div className="float-logo relative mx-auto w-fit">
+                <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-white/30 via-secondary to-primary p-[4px] shadow-[0_0_60px_rgba(200,16,46,0.45)]">
+                  <div className="rounded-full bg-[#020617] p-3 md:p-4">
                     <img
                       src="/brand/record-logo.png"
                       alt="RECORD"
-                      className="mx-auto h-44 w-44 rounded-full object-cover ring-4 ring-white/10 md:h-56 md:w-56 lg:h-64 lg:w-64"
+                      className="mx-auto h-48 w-48 rounded-full object-cover ring-4 ring-white/15 ring-offset-4 ring-offset-[#020617] md:h-56 md:w-56 lg:h-64 lg:w-64"
                     />
                   </div>
                 </div>
@@ -111,53 +262,67 @@ export default function Home() {
         </div>
 
         <svg
-          className="relative -mb-px block h-12 w-full text-[#f4f6f9] md:h-16"
-          viewBox="0 0 1440 64"
+          className="relative -mb-px block h-14 w-full text-[#050d18] md:h-[4.5rem]"
+          viewBox="0 0 1440 72"
           preserveAspectRatio="none"
           aria-hidden
         >
-          <path fill="currentColor" d="M0,64 L0,18 Q240,0 480,28 T960,32 Q1200,36 1440,22 L1440,64 Z" />
+          <path fill="currentColor" d="M0,72 L0,12 Q200,48 480,20 T960,36 Q1200,52 1440,8 L1440,72 Z" />
         </svg>
       </section>
 
-      {/* Stats */}
-      <section className="relative -mt-px bg-gradient-to-b from-[#f4f6f9] via-white to-[#f0f4f8] pb-16 pt-6 md:pb-20 md:pt-8">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+      {/* Stats — dark “arena” */}
+      <section ref={statsRevealRef} className="stats-arena -mt-1">
+        <div className="relative z-10 mx-auto max-w-7xl px-4">
+          <p className="mb-10 text-center font-display text-xs font-bold uppercase tracking-[0.4em] text-secondary-light/90 md:mb-12">
+            {t('stats.arena_caption')}
+          </p>
+          <div
+            className={`record-reveal-block grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5 ${
+              statsVisible ? 'record-reveal-block--visible' : ''
+            }`}
+          >
             {stats.map((stat, i) => (
-              <div
-                key={i}
-                className={`stat-card-fancy motion-safe:fade-rise ${statStagger[i] ?? ''}`}
-              >
-                <span className="stat-shine" aria-hidden />
-                <div className="absolute right-3 top-3 h-16 w-16 rounded-full bg-gradient-to-br from-secondary/15 to-transparent blur-xl" />
-                <stat.icon className="relative mb-4 text-3xl text-secondary drop-shadow-sm md:text-4xl" />
-                <p className="font-display relative text-3xl font-black tracking-tight text-primary md:text-4xl">{stat.value}</p>
-                <p className="relative mt-1 text-sm font-medium text-slate-600">{stat.label}</p>
-              </div>
+              <TiltPlane key={i} strength={9} className="record-reveal-item">
+                <div className={`stat-card-wild motion-safe:fade-rise ${statStagger[i] ?? ''}`}>
+                  <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-secondary/20 blur-2xl" />
+                  <stat.icon className="relative mb-4 text-3xl text-secondary md:text-4xl" />
+                  <p className="stat-value-wild relative">{stat.value}</p>
+                  <p className="relative mt-2 text-sm font-medium uppercase tracking-wide text-slate-300">{stat.label}</p>
+                </div>
+              </TiltPlane>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA — frosted glass panel */}
-      <section className="relative overflow-hidden border-y border-slate-200/80 py-16 md:py-24">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(200,16,46,0.08),transparent)]" />
+      {/* CTA — diagonal split + wild glass */}
+      <section ref={ctaRevealRef} className="cta-split-wrap border-t border-white/10">
         <div className="relative z-10 mx-auto max-w-4xl px-4">
-          <div className="cta-glass-panel">
-            <div className="relative z-10 text-center">
-              <h2 className="font-display text-3xl font-extrabold text-primary md:text-4xl">{t('courses.title')}</h2>
-              <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">{t('about.description')}</p>
+          <div
+            className={`cta-glass-panel-wild record-reveal-cta ${
+              ctaVisible ? 'record-reveal-cta--visible' : ''
+            }`}
+          >
+            <div className="pointer-events-none absolute -left-20 top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-secondary/30 blur-3xl" />
+            <div className="pointer-events-none absolute -right-16 top-0 h-32 w-32 rounded-full bg-sky-400/20 blur-2xl" />
+            <div className="relative z-20 text-center">
+              <h2 className="font-display text-3xl font-black tracking-tight text-white drop-shadow-lg md:text-5xl">
+                {t('courses.title')}
+              </h2>
+              <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/85 md:text-lg">{t('about.description')}</p>
               <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <Link to="/courses" className="btn-primary min-w-[200px]">
+                <Link
+                  to="/courses"
+                  className="btn-interactive btn-primary min-w-[200px] border border-white/20 shadow-2xl shadow-black/30"
+                >
                   {t('hero.cta_secondary')}
                 </Link>
                 <a
                   href={getWhatsAppLink('Саламатсызбы! Курстар жөнүндө маалымат алгым келет.')}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-whatsapp min-w-[200px] shadow-lg shadow-emerald-900/25"
+                  className="btn-interactive btn-whatsapp min-w-[200px] border border-white/20 shadow-2xl"
                 >
                   <FaWhatsapp className="text-xl" /> WhatsApp
                 </a>

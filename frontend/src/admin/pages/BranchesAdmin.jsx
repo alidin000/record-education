@@ -71,10 +71,20 @@ export default function BranchesAdmin() {
 }
 
 function BranchForm({ item, onSuccess }) {
-  const writableFields = ['name_ky', 'name_ru', 'name_en', 'address_ky', 'address_ru', 'address_en', 'phone', 'whatsapp', 'instagram_url', 'latitude', 'longitude', 'is_main'];
+  const writableFields = [
+    'name_ky', 'name_ru', 'name_en', 'address_ky', 'address_ru', 'address_en',
+    'phone', 'whatsapp', 'instagram_url',
+    'latitude', 'longitude',
+    'google_maps_embed_url', 'two_gis_embed_url',
+    'is_main',
+  ];
 
   const getInitial = () => {
-    const base = { name_ky: '', name_ru: '', name_en: '', address_ky: '', address_ru: '', address_en: '', phone: '', whatsapp: '', instagram_url: '', latitude: '', longitude: '', is_main: false };
+    const base = {
+      name_ky: '', name_ru: '', name_en: '', address_ky: '', address_ru: '', address_en: '',
+      phone: '', whatsapp: '', instagram_url: '', latitude: '', longitude: '',
+      google_maps_embed_url: '', two_gis_embed_url: '', is_main: false,
+    };
     if (!item) return base;
     const filled = { ...base };
     writableFields.forEach((key) => {
@@ -93,6 +103,8 @@ function BranchForm({ item, onSuccess }) {
     writableFields.forEach((key) => { payload[key] = form[key]; });
     if (!payload.latitude) payload.latitude = null;
     if (!payload.longitude) payload.longitude = null;
+    if (!payload.google_maps_embed_url) payload.google_maps_embed_url = '';
+    if (!payload.two_gis_embed_url) payload.two_gis_embed_url = '';
     try {
       if (item) {
         await adminApi.patch(`/branches/${item.id}/`, payload);
@@ -148,6 +160,42 @@ function BranchForm({ item, onSuccess }) {
           <input type="text" required value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
             placeholder="+996 555 000 000" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
         </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Адрес (English)</label>
+        <input type="text" value={form.address_en} onChange={(e) => setForm({ ...form, address_en: e.target.value })}
+          className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Instagram URL</label>
+        <input type="url" value={form.instagram_url} onChange={(e) => setForm({ ...form, instagram_url: e.target.value })}
+          className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Энбелги (latitude)</label>
+          <input type="text" value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })}
+            placeholder="40.5283" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Узундук (longitude)</label>
+          <input type="text" value={form.longitude} onChange={(e) => setForm({ ...form, longitude: e.target.value })}
+            placeholder="72.8065" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Google Maps embed (iframe src)</label>
+        <textarea rows={2} value={form.google_maps_embed_url} onChange={(e) => setForm({ ...form, google_maps_embed_url: e.target.value })}
+          placeholder="https://www.google.com/maps/embed?..." className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-xs" />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">2GIS embed (iframe src)</label>
+        <textarea rows={2} value={form.two_gis_embed_url} onChange={(e) => setForm({ ...form, two_gis_embed_url: e.target.value })}
+          placeholder="https://..." className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono text-xs" />
       </div>
 
       <div className="flex items-center gap-2">

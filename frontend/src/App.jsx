@@ -1,7 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
+import PageBodyMathBackdrop from './components/PageBodyMathBackdrop';
+import InnerPagesVisualRail from './components/InnerPagesVisualRail';
 import Home from './pages/Home';
 import About from './pages/About';
 import Courses from './pages/Courses';
@@ -24,6 +26,8 @@ import AchievementsAdmin from './admin/pages/AchievementsAdmin';
 import NewsAdmin from './admin/pages/NewsAdmin';
 import ContactsAdmin from './admin/pages/ContactsAdmin';
 import BranchesAdmin from './admin/pages/BranchesAdmin';
+import PromoAdmin from './admin/pages/PromoAdmin';
+import ReviewsAdmin from './admin/pages/ReviewsAdmin';
 
 export default function App() {
   return (
@@ -49,10 +53,12 @@ export default function App() {
             <Route path="teachers" element={<TeachersAdmin />} />
             <Route path="schedule" element={<ScheduleAdmin />} />
             <Route path="feedbacks" element={<FeedbacksAdmin />} />
+            <Route path="reviews" element={<ReviewsAdmin />} />
             <Route path="achievements" element={<AchievementsAdmin />} />
             <Route path="news" element={<NewsAdmin />} />
             <Route path="contacts" element={<ContactsAdmin />} />
             <Route path="branches" element={<BranchesAdmin />} />
+            <Route path="promo" element={<PromoAdmin />} />
           </Route>
         </Routes>
       </AuthProvider>
@@ -61,10 +67,19 @@ export default function App() {
 }
 
 function PublicLayout({ children }) {
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main
+        className={`public-main-shell relative isolate flex-1 ${!isHome ? 'record-inner-pages' : ''}`}
+      >
+        {!isHome ? <PageBodyMathBackdrop /> : null}
+        {!isHome ? <InnerPagesVisualRail /> : null}
+        <div className="public-main-shell-content relative z-[1] min-h-0">{children}</div>
+      </main>
       <Footer />
       <WhatsAppButton />
     </div>

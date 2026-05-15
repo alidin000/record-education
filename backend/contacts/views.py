@@ -3,13 +3,34 @@ import logging
 from django.conf import settings
 from django.core.mail import send_mail
 from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from .models import Branch, ContactSubmission
-from .serializers import BranchSerializer, ContactSubmissionSerializer
+from .models import Branch, ContactSubmission, SitePromo
+from .serializers import BranchSerializer, ContactSubmissionSerializer, SitePromoPublicSerializer
 
 logger = logging.getLogger("record")
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def site_promo_public(request):
+    """Public read for home page ticker overrides (singleton pk=1)."""
+    row = SitePromo.objects.filter(pk=1).first()
+    if not row:
+        return Response(
+            {
+                "discount_ky": "",
+                "discount_ru": "",
+                "discount_en": "",
+                "limited_ky": "",
+                "limited_ru": "",
+                "limited_en": "",
+                "ticker_enabled": True,
+            }
+        )
+    return Response(SitePromoPublicSerializer(row).data)
 
 
 class BranchViewSet(viewsets.ReadOnlyModelViewSet):

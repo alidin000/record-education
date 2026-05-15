@@ -115,6 +115,10 @@ export default function Footer() {
           </p>
         </div>
       </div>
+
+      <div className="footer-watermark motion-reduce:hidden" aria-hidden>
+        RECORD
+      </div>
     </footer>
   );
 }

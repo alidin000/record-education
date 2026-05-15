@@ -4,6 +4,7 @@ import { FaTrophy, FaMedal, FaStar } from 'react-icons/fa';
 import { getAchievements, getReviews } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
 import PageHeader from '../components/PageHeader';
+import RecordInnerPageWrap from '../components/RecordInnerPageWrap';
 
 export default function Achievements() {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ export default function Achievements() {
     <div>
       <PageHeader title={t('achievements.title')} />
 
+      <RecordInnerPageWrap>
       <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
         <div className="mb-16 grid gap-6 md:grid-cols-3">
           {achievements.map((ach, i) => (
@@ -65,6 +67,7 @@ export default function Achievements() {
           ))}
         </div>
       </div>
+      </RecordInnerPageWrap>
     </div>
   );
 }

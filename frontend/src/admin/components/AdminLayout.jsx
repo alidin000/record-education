@@ -4,15 +4,17 @@ import { useAuth } from '../AuthContext';
 import {
   FaHome, FaBook, FaChalkboardTeacher, FaCalendarAlt,
   FaStar, FaNewspaper, FaMapMarkerAlt, FaEnvelope,
-  FaSignOutAlt, FaBars, FaTimes, FaTrophy
+  FaSignOutAlt, FaBars, FaTimes, FaTrophy, FaBolt, FaComments,
 } from 'react-icons/fa';
 
 const navItems = [
   { to: '/panel', icon: FaHome, label: 'Башкы бет' },
+  { to: '/panel/promo', icon: FaBolt, label: 'Акция / тизме' },
   { to: '/panel/courses', icon: FaBook, label: 'Курстар' },
   { to: '/panel/teachers', icon: FaChalkboardTeacher, label: 'Окутуучулар' },
   { to: '/panel/schedule', icon: FaCalendarAlt, label: 'Расписание' },
-  { to: '/panel/feedbacks', icon: FaStar, label: 'Отзывдар' },
+  { to: '/panel/reviews', icon: FaStar, label: 'Отзывдар (ЖРТ)' },
+  { to: '/panel/feedbacks', icon: FaComments, label: 'Окуучу пикири' },
   { to: '/panel/achievements', icon: FaTrophy, label: 'Жетишкендиктер' },
   { to: '/panel/news', icon: FaNewspaper, label: 'Жаңылыктар' },
   { to: '/panel/contacts', icon: FaEnvelope, label: 'Кайрылуулар' },

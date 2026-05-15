@@ -4,6 +4,7 @@ import { FaChalkboardTeacher } from 'react-icons/fa';
 import { getTeachers } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
 import PageHeader from '../components/PageHeader';
+import RecordInnerPageWrap from '../components/RecordInnerPageWrap';
 
 export default function Teachers() {
   const { t } = useTranslation();
@@ -22,6 +23,7 @@ export default function Teachers() {
     <div>
       <PageHeader title={t('teachers.title')} subtitle={t('about.description')} />
 
+      <RecordInnerPageWrap>
       <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
         {loading ? (
           <div className="flex justify-center py-20">
@@ -54,6 +56,7 @@ export default function Teachers() {
           </div>
         )}
       </div>
+      </RecordInnerPageWrap>
     </div>
   );
 }

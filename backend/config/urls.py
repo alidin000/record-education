@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from contacts.views import BranchViewSet, ContactSubmissionViewSet
+from contacts.views import BranchViewSet, ContactSubmissionViewSet, site_promo_public
 from courses.views import CourseCategoryViewSet, CourseViewSet, ScheduleViewSet
 from news.views import NewsArticleViewSet
 from reviews.views import AchievementViewSet, ReviewViewSet, StudentFeedbackViewSet
@@ -24,6 +24,7 @@ router.register(r"feedback", StudentFeedbackViewSet, basename="feedback")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/site-promo/", site_promo_public),
     path("api/", include(router.urls)),
     path("api/admin/", include("admin_api.urls")),
 ]

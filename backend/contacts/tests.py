@@ -27,6 +27,37 @@ class ContactSubmissionModelTest(TestCase):
         self.assertIn("Тест", str(sub))
 
 
+class SitePromoPublicAPITest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_site_promo_public_ok(self):
+        response = self.client.get("/api/site-promo/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertIn("ticker_enabled", data)
+        self.assertIn("discount_ky", data)
+
+
+class BranchMapFieldsAPITest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_branch_list_includes_map_embed_fields(self):
+        Branch.objects.create(
+            name_ky="Тест", name_ru="Тест",
+            address_ky="А", address_ru="А",
+            phone="1", whatsapp="1",
+            google_maps_embed_url="https://www.google.com/maps/embed?pb=1",
+            two_gis_embed_url="",
+        )
+        response = self.client.get("/api/branches/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        payload = response.json()
+        rows = payload.get("results", payload)
+        self.assertTrue(any(r.get("google_maps_embed_url") for r in rows))
+
+
 class ContactAPITest(TestCase):
     def setUp(self):
         self.client = APIClient()

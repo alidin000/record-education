@@ -31,5 +31,6 @@ describe('API utility functions', () => {
     expect(api.submitContact).toBeDefined()
     expect(api.getFeedbacks).toBeDefined()
     expect(api.submitFeedback).toBeDefined()
+    expect(api.getSitePromo).toBeDefined()
   })
 })

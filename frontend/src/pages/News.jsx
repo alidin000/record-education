@@ -4,6 +4,7 @@ import { FaCalendar, FaTag } from 'react-icons/fa';
 import { getNews } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
 import PageHeader from '../components/PageHeader';
+import RecordInnerPageWrap from '../components/RecordInnerPageWrap';
 
 export default function News() {
   const { t } = useTranslation();
@@ -30,9 +31,11 @@ export default function News() {
     return (
       <div>
         <PageHeader title={t('news.title')} />
+        <RecordInnerPageWrap>
         <div className="flex justify-center py-24">
           <div className="spinner-brand" />
         </div>
+        </RecordInnerPageWrap>
       </div>
     );
   }
@@ -41,6 +44,7 @@ export default function News() {
     <div>
       <PageHeader title={t('news.title')} />
 
+      <RecordInnerPageWrap>
       <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
         {error ? <p className="py-6 text-center font-medium text-red-600">{t('common.error_loading')}</p> : null}
 
@@ -101,6 +105,7 @@ export default function News() {
           <p className="py-16 text-center text-slate-500">{t('news.no_news')}</p>
         ) : null}
       </div>
+      </RecordInnerPageWrap>
     </div>
   );
 }

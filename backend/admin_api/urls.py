@@ -15,6 +15,7 @@ from .views import (
     TeacherAdminViewSet,
     current_user,
     dashboard_stats,
+    site_promo_admin,
 )
 
 router = DefaultRouter()
@@ -34,5 +35,6 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("me/", current_user, name="current_user"),
     path("dashboard/", dashboard_stats, name="dashboard_stats"),
+    path("site-promo/", site_promo_admin, name="site_promo_admin"),
     path("", include(router.urls)),
 ]

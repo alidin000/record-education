@@ -8,20 +8,26 @@
     "achievements": "Achievements",
     "reviews": "Reviews",
     "news": "News",
-    "contacts": "Contacts"
+    "contacts": "Contacts",
+    "language": "Site language"
   },
   "hero": {
     "title": "Prepare for ORT/ZhRT",
     "subtitle": "With Record!",
     "description": "8+ years of experience, hundreds of students scored 200+",
     "cta": "Enroll Now",
-    "cta_secondary": "View Courses"
+    "cta_secondary": "View Courses",
+    "chip_jrt": "ZhRT",
+    "chip_ort": "ORT",
+    "badge_scores": "200+ score",
+    "badge_location": "Osh · KG"
   },
   "stats": {
     "experience": "Years of Experience",
     "students": "Students with 200+ Score",
     "certificates": "Gold Certificates",
-    "branches": "Branches"
+    "branches": "Branches",
+    "arena_caption": "Let the numbers speak"
   },
   "about": {
     "title": "About Us",
@@ -95,7 +101,10 @@
     "form_message": "Message",
     "form_course": "Which course interests you?",
     "form_submit": "Submit",
-    "form_success": "Your application has been received! We will contact you soon."
+    "form_success": "Your application has been received! We will contact you soon.",
+    "map_openstreetmap": "OpenStreetMap",
+    "map_placeholder_title": "Map will appear here",
+    "map_placeholder_help": "In the admin panel (Branches), paste the iframe src from Google Maps “Embed a map” or from the 2GIS embed widget. Alternatively set latitude and longitude to show OpenStreetMap."
   },
   "footer": {
     "rights": "All rights reserved",

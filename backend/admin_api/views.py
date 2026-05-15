@@ -4,7 +4,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from contacts.models import Branch, ContactSubmission
+from contacts.models import Branch, ContactSubmission, SitePromo
 from courses.models import Course, CourseCategory, Schedule
 from news.models import NewsArticle
 from reviews.models import Achievement, Review, StudentFeedback
@@ -20,6 +20,7 @@ from .serializers import (
     NewsArticleAdminSerializer,
     ReviewAdminSerializer,
     ScheduleAdminSerializer,
+    SitePromoAdminSerializer,
     StudentFeedbackAdminSerializer,
     TeacherAdminSerializer,
     UserSerializer,
@@ -51,6 +52,19 @@ def dashboard_stats(request):
 def current_user(request):
     """Get current logged-in user info."""
     return Response(UserSerializer(request.user).data)
+
+
+@api_view(["GET", "PATCH"])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def site_promo_admin(request):
+    """Singleton home ticker: GET current values, PATCH partial update."""
+    row, _ = SitePromo.objects.get_or_create(pk=1)
+    if request.method == "GET":
+        return Response(SitePromoAdminSerializer(row).data)
+    serializer = SitePromoAdminSerializer(row, data=request.data, partial=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data)
 
 
 class CourseCategoryAdminViewSet(viewsets.ModelViewSet):

@@ -8,20 +8,26 @@
     "achievements": "Жетишкендиктер",
     "reviews": "Отзывдар",
     "news": "Жаңылыктар",
-    "contacts": "Байланыштар"
+    "contacts": "Байланыштар",
+    "language": "Сайттын тили"
   },
   "hero": {
     "title": "ЖРТ/ОРТго даярдан",
     "subtitle": "Рекорд менен!",
     "description": "8+ жылдык тажрыйба, жүздөгөн окуучулар 200+ балл алышкан",
     "cta": "Жазылуу",
-    "cta_secondary": "Курстарды көрүү"
+    "cta_secondary": "Курстарды көрүү",
+    "chip_jrt": "ЖРТ",
+    "chip_ort": "ОРТ",
+    "badge_scores": "200+ балл",
+    "badge_location": "Ош · КР"
   },
   "stats": {
     "experience": "Жылдык тажрыйба",
     "students": "200+ балл алган окуучулар",
     "certificates": "Алтын сертификаттар",
-    "branches": "Филиалдар"
+    "branches": "Филиалдар",
+    "arena_caption": "Цифрлар сүйлөйт"
   },
   "about": {
     "title": "Биз жөнүндө",
@@ -95,7 +101,10 @@
     "form_message": "Кошумча билдирүү",
     "form_course": "Кайсы курска кызыгасыз?",
     "form_submit": "Жөнөтүү",
-    "form_success": "Кайрылууңуз кабыл алынды! Тез арада байланышабыз."
+    "form_success": "Кайрылууңуз кабыл алынды! Тез арада байланышабыз.",
+    "map_openstreetmap": "OpenStreetMap",
+    "map_placeholder_title": "Карта бул жерде көрүнөт",
+    "map_placeholder_help": "Админдеги «Филиалдар» бөлүмүнөн Google Maps же 2GIS embed iframe src URL коюңуз. Же кеңдик/узундукту киргизип OpenStreetMap көрсөтүңүз."
   },
   "footer": {
     "rights": "Бардык укуктар корголгон",

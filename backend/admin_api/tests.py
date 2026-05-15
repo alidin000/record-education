@@ -3,6 +3,8 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from contacts.models import SitePromo
+
 
 class JWTAuthFlowTest(TestCase):
     def setUp(self):
@@ -70,6 +72,27 @@ class JWTAuthFlowTest(TestCase):
         self.assertIn("courses_count", response.data)
         self.assertIn("teachers_count", response.data)
         self.assertIn("pending_feedbacks", response.data)
+
+
+class SitePromoAdminAPITest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.admin = User.objects.create_superuser("spromo", "sp@b.com", "TestPass123!")
+        self.client.force_authenticate(user=self.admin)
+
+    def test_get_and_patch_site_promo(self):
+        r = self.client.get("/api/admin/site-promo/")
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertIn("ticker_enabled", r.data)
+
+        r2 = self.client.patch("/api/admin/site-promo/", {
+            "discount_ru": "Скидка 15%",
+            "ticker_enabled": True,
+        })
+        self.assertEqual(r2.status_code, status.HTTP_200_OK)
+        self.assertEqual(r2.data.get("discount_ru"), "Скидка 15%")
+        row = SitePromo.objects.get(pk=1)
+        self.assertEqual(row.discount_ru, "Скидка 15%")
 
 
 class RatingValidationTest(TestCase):

@@ -17,6 +17,17 @@ vi.mock('../utils/api', () => ({
   getAchievements: vi.fn().mockResolvedValue({ data: [] }),
   getNews: vi.fn().mockResolvedValue({ data: { results: [] } }),
   getBranches: vi.fn().mockResolvedValue({ data: [] }),
+  getSitePromo: vi.fn().mockResolvedValue({
+    data: {
+      discount_ky: '',
+      discount_ru: '',
+      discount_en: '',
+      limited_ky: '',
+      limited_ru: '',
+      limited_en: '',
+      ticker_enabled: true,
+    },
+  }),
   getFeedbacks: vi.fn().mockResolvedValue({ data: { results: [] } }),
   submitContact: vi.fn().mockResolvedValue({ data: {} }),
   submitFeedback: vi.fn().mockResolvedValue({ data: {} }),

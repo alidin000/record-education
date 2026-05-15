@@ -19,7 +19,7 @@ export default function WhatsAppButton() {
       href={getWhatsAppLink(message)}
       target="_blank"
       rel="noopener noreferrer"
-      className="group fixed bottom-6 right-6 z-50 rounded-2xl bg-emerald-500 p-4 text-white shadow-2xl shadow-emerald-900/30 ring-4 ring-white/90 transition-all duration-300 hover:scale-105 hover:bg-emerald-400"
+      className="group fixed bottom-6 right-6 z-40 rounded-2xl bg-emerald-500 p-4 text-white shadow-2xl shadow-emerald-900/30 ring-4 ring-white/90 transition-all duration-300 hover:scale-105 hover:bg-emerald-400"
       aria-label="WhatsApp"
     >
       <FaWhatsapp size={28} />

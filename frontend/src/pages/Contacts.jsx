@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaPhone, FaWhatsapp, FaInstagram, FaMapMarkerAlt, FaCheck } from 'react-icons/fa';
 import { getBranches, submitContact } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
 import PageHeader from '../components/PageHeader';
+import RecordInnerPageWrap from '../components/RecordInnerPageWrap';
+import BranchMapTabs from '../components/BranchMapTabs';
 
 export default function Contacts() {
   const { t } = useTranslation();
@@ -36,10 +38,16 @@ export default function Contacts() {
     setTimeout(() => setSubmitted(false), 5000);
   };
 
+  const mapBranch = useMemo(
+    () => branches.find((b) => b.is_main) || branches[0],
+    [branches],
+  );
+
   return (
     <div>
       <PageHeader title={t('contacts.title')} subtitle={t('about.description')} />
 
+      <RecordInnerPageWrap>
       <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div className="card-accent p-8 shadow-xl md:p-10">
@@ -156,14 +164,22 @@ export default function Contacts() {
               </div>
             ))}
 
-            <div className="card overflow-hidden">
-              <div className="flex h-56 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-                <p className="text-sm font-medium text-slate-500">2GIS / Google Maps</p>
-              </div>
+            <div className="card overflow-hidden p-1">
+              <BranchMapTabs
+                key={JSON.stringify([
+                  mapBranch.id,
+                  mapBranch.google_maps_embed_url || '',
+                  mapBranch.two_gis_embed_url || '',
+                  mapBranch.latitude ?? '',
+                  mapBranch.longitude ?? '',
+                ])}
+                branch={mapBranch}
+              />
             </div>
           </div>
         </div>
       </div>
+      </RecordInnerPageWrap>
     </div>
   );
 }
@@ -181,6 +197,8 @@ const demoBranches = [
     whatsapp: '+996 555 000 001',
     instagram_url: 'https://instagram.com/record_osh',
     is_main: true,
+    latitude: 40.5283,
+    longitude: 72.8065,
   },
   {
     id: 2,

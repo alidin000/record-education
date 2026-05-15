@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { FaGraduationCap, FaBullseye, FaUsers } from 'react-icons/fa';
 import PageHeader from '../components/PageHeader';
+import RecordInnerPageWrap from '../components/RecordInnerPageWrap';
 
 export default function About() {
   const { t } = useTranslation();
@@ -9,7 +10,8 @@ export default function About() {
     <div>
       <PageHeader title={t('about.title')} subtitle={t('about.description')} />
 
-      <div className="mx-auto max-w-7xl px-4 pb-20 pt-12 md:pt-16">
+      <RecordInnerPageWrap>
+        <div className="mx-auto max-w-7xl px-4 pb-20 pt-12 md:pt-16">
         <div className="card-accent mb-14 overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-light to-[#1a5080] p-8 text-white shadow-2xl md:p-12">
           <div className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-12">
             <div className="flex h-40 w-40 shrink-0 items-center justify-center rounded-full border-4 border-white/25 bg-white/10 shadow-inner backdrop-blur-sm md:h-48 md:w-48">
@@ -40,7 +42,8 @@ export default function About() {
             <p className="mt-4 leading-relaxed text-slate-600">{t('about.description')}</p>
           </div>
         </div>
-      </div>
+        </div>
+      </RecordInnerPageWrap>
     </div>
   );
 }

@@ -8,20 +8,26 @@
     "achievements": "Достижения",
     "reviews": "Отзывы",
     "news": "Новости",
-    "contacts": "Контакты"
+    "contacts": "Контакты",
+    "language": "Язык сайта"
   },
   "hero": {
     "title": "Подготовься к ОРТ/ЖРТ",
     "subtitle": "С Рекордом!",
     "description": "8+ лет опыта, сотни учеников набрали 200+ баллов",
     "cta": "Записаться",
-    "cta_secondary": "Посмотреть курсы"
+    "cta_secondary": "Посмотреть курсы",
+    "chip_jrt": "ЖРТ",
+    "chip_ort": "ОРТ",
+    "badge_scores": "200+ баллов",
+    "badge_location": "Ош · КР"
   },
   "stats": {
     "experience": "Лет опыта",
     "students": "Учеников с 200+ баллами",
     "certificates": "Золотых сертификатов",
-    "branches": "Филиалов"
+    "branches": "Филиалов",
+    "arena_caption": "Цифры говорят сами"
   },
   "about": {
     "title": "О нас",
@@ -95,7 +101,10 @@
     "form_message": "Сообщение",
     "form_course": "Какой курс вас интересует?",
     "form_submit": "Отправить",
-    "form_success": "Ваша заявка принята! Мы скоро свяжемся с вами."
+    "form_success": "Ваша заявка принята! Мы скоро свяжемся с вами.",
+    "map_openstreetmap": "OpenStreetMap",
+    "map_placeholder_title": "Здесь появится карта",
+    "map_placeholder_help": "В админке (Филиалы) вставьте src iframe из Google «Встроить карту» или виджета 2GIS. Либо укажите широту и долготу — покажем OpenStreetMap."
   },
   "footer": {
     "rights": "Все права защищены",

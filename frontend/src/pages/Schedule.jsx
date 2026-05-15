@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { getSchedule } from '../utils/api';
 import { useLocalized } from '../hooks/useLocalized';
 import PageHeader from '../components/PageHeader';
+import RecordInnerPageWrap from '../components/RecordInnerPageWrap';
 
 const daysOrder = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
@@ -60,6 +61,7 @@ export default function Schedule() {
     <div>
       <PageHeader title={t('schedule.title')} />
 
+      <RecordInnerPageWrap>
       <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 md:pt-14">
         {loading ? (
           <div className="flex justify-center py-20">
@@ -115,6 +117,7 @@ export default function Schedule() {
           </div>
         )}
       </div>
+      </RecordInnerPageWrap>
     </div>
   );
 }

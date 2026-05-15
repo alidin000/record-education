@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FaBars, FaTimes, FaGlobe } from 'react-icons/fa';
+import { FaBars, FaTimes } from 'react-icons/fa';
+import ScrollProgressBar from './ScrollProgressBar';
 
 const languages = [
   { code: 'ky', label: 'Кыргызча' },
@@ -12,7 +13,6 @@ const languages = [
 export default function Navbar() {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
   const location = useLocation();
 
   const navLinks = [
@@ -29,13 +29,22 @@ export default function Navbar() {
 
   const changeLanguage = (code) => {
     i18n.changeLanguage(code);
-    setLangOpen(false);
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 shadow-sm shadow-slate-900/5 backdrop-blur-xl">
+    <>
+      <nav className="record-nav-shell relative sticky top-0 z-[100] border-b border-slate-200/80 bg-white/90 shadow-md shadow-slate-900/10 backdrop-blur-xl">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div
+          className="absolute inset-0 opacity-[0.4]"
+          style={{
+            backgroundImage: 'radial-gradient(circle at center, #cbd5e1 0.5px, transparent 0.5px)',
+            backgroundSize: '18px 18px',
+          }}
+        />
+      </div>
       <div className="nav-accent-line absolute inset-x-0 top-0 h-[3px]" />
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="relative z-10 mx-auto max-w-7xl px-4">
         <div className="flex h-[4.25rem] items-center justify-between gap-4">
           <Link to="/" className="group flex min-w-0 items-center gap-3">
             <div className="relative shrink-0">
@@ -63,10 +72,10 @@ export default function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`nav-link-pop relative rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
                     active
                       ? 'text-primary'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-primary'
+                      : 'text-slate-600 hover:bg-slate-100/80 hover:text-primary'
                   }`}
                 >
                   {active ? (
@@ -79,33 +88,35 @@ export default function Navbar() {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-primary/30 hover:bg-white"
-              >
-                <FaGlobe className="text-primary" />
-                <span className="uppercase">{i18n.language?.substring(0, 2)}</span>
-              </button>
-              {langOpen ? (
-                <div className="absolute right-0 mt-2 min-w-[160px] overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl shadow-slate-900/10">
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      type="button"
-                      onClick={() => changeLanguage(lang.code)}
-                      className={`w-full px-4 py-2.5 text-left text-sm transition hover:bg-slate-50 ${
-                        i18n.language?.startsWith(lang.code)
-                          ? 'font-semibold text-secondary'
-                          : 'text-slate-700'
-                      }`}
-                    >
-                      {lang.label}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
+            <div
+              className="record-lang-rail flex items-stretch rounded-xl border border-slate-200/90 bg-gradient-to-b from-slate-50 to-slate-100/90 p-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]"
+              role="group"
+              aria-label={t('nav.language')}
+            >
+              {languages.map((lang) => {
+                const active = i18n.language?.startsWith(lang.code);
+                return (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    onClick={() => changeLanguage(lang.code)}
+                    title={lang.label}
+                    className={`record-lang-seg relative min-w-[2.5rem] rounded-lg px-2 py-2 text-center font-mono text-[11px] font-black uppercase tracking-tight transition-all md:min-w-[2.75rem] md:px-2.5 ${
+                      active
+                        ? 'text-white shadow-lg shadow-secondary/35'
+                        : 'text-slate-500 hover:bg-white/80 hover:text-primary'
+                    }`}
+                  >
+                    {active ? (
+                      <span
+                        className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-br from-secondary via-secondary to-primary record-lang-pulse-motion"
+                        aria-hidden
+                      />
+                    ) : null}
+                    <span className="relative">{lang.code}</span>
+                  </button>
+                );
+              })}
             </div>
 
             <button
@@ -141,5 +152,7 @@ export default function Navbar() {
         ) : null}
       </div>
     </nav>
+    <ScrollProgressBar />
+    </>
   );
 }

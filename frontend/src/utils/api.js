@@ -32,6 +32,9 @@ export const getNews = (category) => {
 
 export const getBranches = () => api.get('/branches/');
 
+/** Public home-page ticker / promo overrides (singleton). */
+export const getSitePromo = () => api.get('/site-promo/');
+
 export const submitContact = (data) => api.post('/contact/', data);
 
 export const getFeedbacks = () => api.get('/feedback/');

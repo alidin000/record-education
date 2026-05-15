@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from contacts.models import Branch, ContactSubmission
+from contacts.models import Branch, ContactSubmission, SitePromo
 from courses.models import Course, CourseCategory, Schedule
 from news.models import NewsArticle
 from reviews.models import Achievement, Review, StudentFeedback
@@ -82,6 +82,16 @@ class BranchAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
         fields = "__all__"
+
+
+class SitePromoAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SitePromo
+        fields = [
+            "discount_ky", "discount_ru", "discount_en",
+            "limited_ky", "limited_ru", "limited_en",
+            "ticker_enabled",
+        ]
 
 
 class ContactSubmissionAdminSerializer(serializers.ModelSerializer):
