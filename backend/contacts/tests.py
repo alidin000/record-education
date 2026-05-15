@@ -70,6 +70,14 @@ class ResolveMapLinkAPITest(TestCase):
         r = self.client.get("/api/resolve-map-link/", {"url": "https://example.com/map"})
         self.assertEqual(r.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+    def test_resolve_google_maps_at_url_without_fetch(self):
+        url = "https://www.google.com/maps/@47.4831427,19.0848337,6340m/data=!3m1!1e3"
+        r = self.client.get("/api/resolve-map-link/", {"url": url})
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        data = r.json()
+        self.assertAlmostEqual(data["latitude"], 47.4831427, places=4)
+        self.assertAlmostEqual(data["longitude"], 19.0848337, places=4)
+
 
 class ContactAPITest(TestCase):
     def setUp(self):

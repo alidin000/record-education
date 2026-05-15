@@ -170,8 +170,9 @@ function BranchForm({ item, onSuccess }) {
 
       <div>
         <label className="block text-xs font-medium text-gray-600 mb-1">Instagram URL</label>
+        <p className="mb-1 text-[11px] text-gray-500">Тек гана Instagram (карта шилтемелерин төмөнкү талааларга).</p>
         <input type="url" value={form.instagram_url} onChange={(e) => setForm({ ...form, instagram_url: e.target.value })}
-          className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+          placeholder="https://instagram.com/..." className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">

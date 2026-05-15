@@ -7,6 +7,11 @@ describe('BranchMapTabs helpers', () => {
     expect(sanitizeMapEmbedSrc(u)).toBe(u);
   });
 
+  it('sanitizeMapEmbedSrc rejects Google Maps browse URLs (not iframe-safe)', () => {
+    const u = 'https://www.google.com/maps/@47.48,19.08,12z';
+    expect(sanitizeMapEmbedSrc(u)).toBeNull();
+  });
+
   it('sanitizeMapEmbedSrc accepts 2GIS https URL', () => {
     const u = 'https://widgets.2gis.com/demo';
     expect(sanitizeMapEmbedSrc(u)).toBe(u);
@@ -34,6 +39,10 @@ describe('BranchMapTabs helpers', () => {
   it('looksLikeResolvableMapShareUrl detects Google short links', () => {
     expect(looksLikeResolvableMapShareUrl('https://maps.app.goo.gl/abc')).toBe(true);
     expect(looksLikeResolvableMapShareUrl('https://www.google.com/maps/embed?pb=1')).toBe(false);
+  });
+
+  it('looksLikeResolvableMapShareUrl detects full Google Maps browse links', () => {
+    expect(looksLikeResolvableMapShareUrl('https://www.google.com/maps/@47.48,19.08,12z')).toBe(true);
   });
 
   it('looksLikeResolvableMapShareUrl detects 2GIS hosts', () => {

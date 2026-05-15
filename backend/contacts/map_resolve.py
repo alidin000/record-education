@@ -165,6 +165,26 @@ def resolve_map_share_url(url: str) -> dict:
     if not _host_in_set(parsed.netloc, ALLOWED_START_HOSTS):
         raise MapResolveError("Host not allowed for map link resolution")
 
+    # Coordinates already in URL (e.g. /maps/@lat,lon or !3d!4d) — no HTTP fetch needed.
+    coords = _parse_google_lat_lon(raw)
+    if coords is not None:
+        lat, lon = coords
+        return {
+            "latitude": round(lat, 6),
+            "longitude": round(lon, 6),
+            "final_url": raw,
+            "source": "google",
+        }
+    coords = _parse_2gis_lat_lon(raw)
+    if coords is not None:
+        lat, lon = coords
+        return {
+            "latitude": round(lat, 6),
+            "longitude": round(lon, 6),
+            "final_url": raw,
+            "source": "2gis",
+        }
+
     ctx = ssl.create_default_context()
     https_handler = HTTPSHandler(context=ctx)
     opener = build_opener(_GuardedRedirectHandler(), https_handler)
